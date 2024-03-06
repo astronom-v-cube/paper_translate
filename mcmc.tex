@@ -602,8 +602,7 @@ $L_{\posterior}(\hat{\params})$ при \textbf{абсолютных потеря
     {\sum_{i=1}^{n}\tilde{\posterior}(\params_i) \Delta \params_i}
     = C
 \end{equation}
-Consistency is subsequently the idea that the value we converge to
-is the true value we are interested in estimating:
+Последовательность - это впоследствии идея о том, что значение, к которому мы сходимся, является истинным значением, которое мы хотим оценить:
 \begin{equation}
     \lim_{n \rightarrow \infty} \frac{\sum_{i=1}^{n} f(\params_i) 
     \tilde{\posterior}(\params_i) \Delta \params_i}
@@ -615,163 +614,72 @@ is the true value we are interested in estimating:
 \begin{center}
 \includegraphics[width=\textwidth]{figures/fig5.png}
 \end{center}
-\caption{An illustration of how grid-based estimates can be \textit{convergent}
-(i.e. converge to a single value as the number of grid points increases)
-but not \textit{consistent} (i.e. the value it converges to is not the correct answer).
-Our toy 2-D unnormalized posterior $\tilde{\posterior}(\params)$ has
-two modes that are well-separated with a total evidence of $\evidence = 200$.
-If we are not aware of the second mode, we might define a grid region
-that only encompasses a subset of the entire parameter space (left). 
-While increasing the resolution of the grid within this region allows the estimated
-$\evidence$ to converge to an single answer (left to right),
-this is not equal to the correct answer of $\evidence = 200$
-because we have neglected the contribution of the other component
-(right). See \S\ref{subsec:consistent} for additional details.
+\caption{Иллюстрация того, как оценки на основе сетки могут быть \textit{конвергентными} (т.е. сходиться к одному значению по мере увеличения числа точек сетки), но не \textit{консистентными} (т.е. значение, к которому они сходятся, не является правильным ответом). У нашего игрушечного двухмерного ненормированного апостериорного $\tilde{\posterior}(\params)$ есть два режима, которые хорошо разделены с общим доказательством $\evidence = 200$. Если мы не знаем о втором режиме, мы можем определить область сетки, которая охватывает только подмножество всего пространства параметров (слева). Хотя увеличение разрешения сетки в этой области позволяет оценкам $\evidence$ сходиться к единому ответу (слева направо), это не равно правильному ответу $\evidence = 200$, потому что мы пренебрегли вкладом другой компоненты (справа). Дополнительные подробности см. в \S\ref{subsec:consistent}
 }\label{fig:conv}
 \end{figure}
 
-It is straightforward to show
-that \textit{if} the expectation value is well-defined (i.e. it exists)
-\textit{and} the grid covers the entire domain of $\params$ (i.e. spans
-the smallest and largest possible values in every dimension)
-then using a grid is a \textbf{consistent} way to estimate 
-the expectation value.
-This should make intuitive sense: provided our grid is
-expansive enough in $\params$ so that we're not ``missing''
-any region of parameter space, we should be able to estimate
-$\meanwrt{f(\params)}{\posterior}$ to arbitrary precision
-by simply increasing the resolution in $\Delta \params$.
+Легко показать, что \textit{если} матожидание хорошо определено (т.е. существует)\textit{и} сетка покрывает всю область $\params$ (т.е. охватывает наименьшие и наибольшие возможные значения в каждом измерении), то использование сетки является \textbf{согласованным} способом оценки матожидания. Это должно иметь интуитивный смысл: при условии, что наша сетка достаточно обширна в $\params$, так что мы не "пропустим" ни одной области пространства параметров, мы должны быть в состоянии оценить $\meanwrt{f(\params)}{\posterior}$ с произвольной точностью, просто увеличивая разрешение в $\Delta \params$.
 
-Unfortunately, we do not know beforehand what range of 
-values of $\params$ our grid should span. While parameters
-can range over $(-\infty, +\infty)$, grids rely on finite-volume elements
-and so we have to choose some finite sub-space to grid up.
-So while grids may give estimates that converge to some
-value over the range spanned by the grid points,
-there is always a possibility that a significant portion of the posterior
-lies outside that range. In these cases,
-grids are not guaranteed to be consistent estimators
-of $\meanwrt{f(\params)}{\posterior}$. An illustration of this issue is
-shown in {\color{red} \autoref{fig:conv}}.
-This fundamental problem is not shared by Monte Carlo
-methods, which I will cover in \S\ref{sec:montecarlo}.
+К сожалению, мы не знаем заранее, в каком диапазоне значений $\params$ должна находиться наша сетка. В то время как параметры могут лежать в диапазоне $(-\infty, +\infty)$, сетки опираются на элементы конечного объема, поэтому мы должны выбрать некоторое конечное подпространство для сетки. Поэтому, хотя сетки могут давать оценки, которые сходятся к некоторому значению в диапазоне, охватываемом точками сетки, всегда есть вероятность, что значительная часть апостериорного значения лежит за пределами этого диапазона. В таких случаях не гарантируется, что сетки будут последовательными оценщиками $\meanwrt{f(\params)}{\posterior}$. Иллюстрация этой проблемы показана на {\color{red} \autoref{fig:conv}}. Этой фундаментальной проблеме не подвержены методы Монте-Карло, о которых я расскажу в \S\ref{sec:montecarlo}.
 
-\subsection*{Exercise: Grids over a 2-D Gaussian} \label{exercise:grids}
+\subsection*{Упражнение: Сетки над двумерным гауссовым пространством} \label{exercise:grids}
 
 \subsubsection*{Setup}
 
-Consider an unnormalized posterior 
-well-approximated by a 2-D Gaussian (Normal)
-distribution centered on $(\mu_x,\mu_y)$ 
-with standard deviations $(\sigma_x, \sigma_y)$:
+Рассмотрим ненормированный апостериор, хорошо аппроксимируемый двумерным гауссовым (нормальным) распределением с центром на $(\mu_x,\mu_y)$ со стандартными отклонениями $(\sigma_x, \sigma_y)$:
 \begin{equation*}
     \tilde{\posterior}(x,y) 
     = \exp\left\{-\frac{1}{2}\left[\frac{(x-\mu_x)^2}{\sigma_x^2}
     + \frac{(y-\mu_y)^2}{\sigma_y^2}\right]\right\}
 \end{equation*}
-Assume that we expect to find our posterior has a mean of $0$ and
-a standard deviation of $1$.
-In reality, however, our posterior actually has means $(\mu_x,\mu_y)=(-0.3,0.8)$ and
-standard deviations $(\sigma_x^2,\sigma_y^2)=(2,0.5)$, mimicking the common
-case where our prior expectations and posterior inferences somewhat disagree.
+Предположим, что мы ожидаем найти, что наше апостериорное значение имеет среднее $0$ и стандартное отклонение $1$. Однако в действительности наше апостериорное значение имеет среднее $(\mu_x,\mu_y)=(-0,3,0,8)$ и стандартное отклонение $(\sigma_x^2,\sigma_y^2)=(2,0,5)$, имитируя обычный случай, когда наши предварительные ожидания и апостериорные выводы несколько расходятся.
 
-\subsubsection*{Grid-based Estimation}
+\subsubsection*{Оценка на основе сетки}
 
-We want to use a 2-D grid to estimate various forms of posterior integrals.
-Starting with an evenly-spaced $5 \times 5$ grid from $[-2, 2]$, compute:
+Мы хотим использовать двумерную сетку для оценки различных форм постреляционных интегралов.
+Начиная с равномерно расположенной сетки $5 \times 5$ из $[-2, 2]$, вычислите:
 \begin{enumerate}
-    \item the evidence $\evidence$,
-    \item the means $\meanwrt{x}{\posterior}$
-    and $\meanwrt{y}{\posterior}$,
-    \item the 68\% credible intervals (or closest approximation) 
-    $[x_{\rm low}, x_{\rm high}]$ and $[y_{\rm low}, y_{\rm high}]$,
-    \item and the effective sample size $n_{\rm eff}$.
+	\item доказательства $\evidence$,
+	\item средние $\meanwrt{x}{\posterior}$
+	и $\meanwrt{y}{\posterior}$,
+	\item 68\% доверительные интервалы (или ближайшее приближение) 
+	$[x_{\rm low}, x_{\rm high}]$ и $[y_{\rm low}, y_{\rm high}]$,
+	\ элемент и эффективный размер выборки $n_{\rm eff}$.
 \end{enumerate}
-How accurate are each of these quantities with the values we might
-expect? What does $n_{\rm eff}/n$ tell us about how efficiently
-we have allocated our grid points?
+Насколько точно каждая из этих величин соответствует тем значениям, которые мы могли бы ожидать? Что говорит нам $n_{\rm eff}/n$ о том, насколько эффективно мы распределили точки сетки?
 
-\subsubsection*{Convergence}
+\subsubsection*{Конвергенция}
 
-Repeat the above exercise using an evenly-spaced grid of
-$20 \times 20$ points and $100 \times 100$ points. Comment
-on any differences. How much has the overall accuracy improved? Do
-the estimates appear convergent?
+Повторите упражнение, используя равномерно расположенную сетку из $20 \times 20$ точек и $100 \times 100$ точек. Прокомментируйте любые различия. Насколько повысилась общая точность? Сходятся ли оценки?
 
-\subsubsection*{Consistency}
+\subsubsection*{Консистенция}
 
-Next, expand the bounds of the grid to be from $[-5, 5]$ and
-perform the same exercise as above. Do the answers change substantially?
-If so, what does this tell us about the consistency of our previous
-estimates? Adjust the density and bounds of the grid until the 
-answers appear both convergent and consistent.
-Remember that we do not know the exact shape of the posterior 
-ahead of time. What does this imply
-about general concerns when applying grids in practice?
+Далее расширьте границы сетки до $[-5, 5]$ и выполните то же упражнение, что и выше. Существенно ли изменились ответы? Если да, то что это говорит нам о согласованности наших предыдущих оценок? Регулируйте плотность и границы сетки до тех пор, пока ответы не станут сходящимися и непротиворечивыми. Помните, что мы не знаем точной формы апостериорных оценок заранее. Что из этого следует в отношении общих проблем при применении сеток на практике?
 
-\subsubsection*{Effective Sample Size}
+\subsubsection*{Эффективный размер выборки}
 
-Finally, explore whether there is a straightforward scheme to adjust the
-locations of the $x$ and $y$ grid points to maximize the effective
-sample size based on the definition outlined in \S\ref{subsec:ess}.
-If so, can you explain why it works? If not, why not?
-Compared to equivalent evenly-spaced grids, how much can adaptively adjusting
-the grid spacing improve $n_{\rm eff}$ and the overall accuracy of our estimates?
+Наконец, изучите, существует ли простая схема настройки расположения точек сетки $x$ и $y$ для максимизации эффективного размера выборки на основе определения, изложенного в \S\ref{subsec:ess}. Если да, то можете ли вы объяснить, почему это работает? Если нет, то почему? Насколько адаптивная регулировка расстояния между сетками может улучшить $n_{\rm eff}$ и общую точность наших оценок по сравнению с эквивалентными равномерно распределенными сетками?
 
-\section{From Grids to Monte Carlo Methods} \label{sec:montecarlo}
+\section{От сеток к методам Монте-Карло} \label{sec:montecarlo}
 
-\subsection{Connecting Grid Points and Samples}
+\subsection{Соединение точек сетки и выборок}
 \label{subsec:grid_to_samp}
 
-Earlier, I outlined how we can relate estimating
-$\meanwrt{f(\params)}{\posterior}$ using a grid of $n$ points to
-an equivalent estimate using a set of $n$ samples $\{ f_1, \dots, f_n\}$
-and a series of associated weights $\{ w_1, \dots, w_n \}$.
-The main result is that there is an intimate connection between the
-structure of the posterior and the grid to the relative amplitude
-of the weights $w_i \equiv \tilde{\posterior}(\params_i)\Delta\params_i$
-for each point $f_i \equiv f(\params_i)$. Adjusting the resolution
-of the grid then affects these weights, with a more uniform distribution
-of weights leading to a larger ESS which can improve our estimate.
+Ранее я описал, как можно связать оценку $\meanwrt{f(\params)}{\posterior}$ с помощью сетки из $n$ точек с эквивалентной оценкой с помощью набора $n$ выборок $\{ f_1, \dots, f_n\}$ и ряда связанных с ними весов $\{ w_1, \dots, w_n \}$. Основной результат состоит в том, что существует тесная связь между структурой апостериорной сетки и сетки с относительной амплитудой весов $w_i \equiv \tilde{\posterior}(\params_i)\Delta\params_i$ для каждой точки $f_i \equiv f(\params_i)$. Регулировка разрешения сетки влияет на эти веса, при этом более равномерное распределение весов приводит к увеличению ESS, что может улучшить нашу оценку.
 
-The fact that decreasing the spacing (making grid denser)
-also decreases the weights makes sense: we have more points 
-located in that region, so each point should in general
-get less relative weight when computing $\meanwrt{f(\params)}{\posterior}$. 
-Likewise, if we have the same spacing
-but change the relative shape of the posterior, 
-the weight of that point when estimating $\meanwrt{f(\params)}{\posterior}$
-should also change accordingly.
+Тот факт, что уменьшение расстояния между точками (более плотная сетка) также уменьшает веса, имеет смысл: у нас больше точек, расположенных в этой области, поэтому каждая точка должна получить меньший относительный вес при вычислении $\meanwrt{f(\params)}{\posterior}$. Аналогично, если у нас одинаковые расстояния между точками, но меняется относительная форма заднего плана, то вес этой точки при оценке $\meanwrt{f(\params)}{\posterior}$ также должен измениться соответственно.
 
-I now want to extend this basic relationship further.
-In theory, adaptively increasing the resolution of our grid allows
-us more control over the volume elements $\Delta \params_i$ used to
-derive our weights. If we knew the shape of our posterior sufficiently
-well, for large $n$ 
-we should in theory be able to adjust $\Delta \params_i$ such that
-the weights $w_i = \tilde{\posterior}(\params_i)\Delta\params_i$
-are uniform to some amount of desired precision.
-By inspection, this should happen when
+Теперь я хочу расширить это базовое соотношение. Теоретически, адаптивное увеличение разрешения нашей сетки позволяет нам лучше контролировать элементы объема $\Delta \params_i$, используемые для получения весов. Если мы достаточно хорошо знаем форму нашего постера, то для больших $n$ мы теоретически должны быть в состоянии настроить $\Delta \params_i$ так, чтобы веса $w_i = \tilde{\posterior}(\params_i)\Delta\params_i$ были равномерными с некоторой желаемой точностью. По проверке, это должно произойти, когда
 \begin{equation}
     \Delta \params_i \propto \frac{1}{\tilde{\posterior}(\params_i)}
 \end{equation}
-for all $i$.
+для всех $i$.
 
-Taking this reasoning to its conceptual limit, as $n \rightarrow \infty$
-we can imagine estimating the posterior using a larger and larger number of 
-grid points whose spacing $\Delta \params$ changes as a function of $\params$.
-Using this, we can now define the density of points $\proposal(\params)$
-based on the varying resolution $\Delta\params(\params)$ of our
-infinitely-fine grid as a function of $\params$:
-\begin{equation}
-    \proposal(\params) \propto \frac{1}{\Delta\params (\params)}
-\end{equation}
-This result suggests that, in the continuum limit where $n \rightarrow \infty$, 
-\textit{the structure of our infinite-resolution grid is equivalent to a new
-continuous distribution} $\proposal(\params)$. An illustration
-of this concept is shown in {\color{red} \autoref{fig:density}}. 
-Using $\proposal(\params)$, we can 
-then rewrite our original expectation value as
+Если довести эти рассуждения до концептуального предела, то с ростом $n \rightarrow \infty$ мы можем представить, что оцениваем апостериор, используя все большее и большее количество точек сетки, расстояние между которыми $\Delta \params$ меняется как функция от $\params$. Используя это, мы можем определить плотность точек $\proposal(\params)$ на основе изменяющегося разрешения $\Delta\params(\params)$ нашей бесконечно тонкой сетки как функцию $\params$: 
+\begin{equation} 
+	\proposal(\params)\propto \frac{1}{\Delta\params (\params)} 
+\end{equation} 
+Этот результат говорит о том, что в континуальном пределе, где $n \rightarrow \infty$, \textit{структура нашей сетки с бесконечным разрешением эквивалентна новому непрерывному распределению} $\proposal(\params)$. Иллюстрация этой концепции показана на {\color{red} \autoref{fig:density}}. Используя $\proposal(\params)$, мы можем переписать наше исходное матожидание в виде
 \begin{equation}
     \meanwrt{f(\params)}{\posterior} 
     \equiv \frac{\int f(\params) \tilde{\posterior}(\params) \deriv \params}
@@ -784,140 +692,46 @@ then rewrite our original expectation value as
     \tilde{\posterior}(\params)/\proposal(\params)}{\proposal}}
     {\meanwrt{\tilde{\posterior}(\params)/\proposal(\params)}{\proposal}}
 \end{equation}
-For reasons that will soon become clear, I will refer to 
-$\proposal(\params)$ as the \textbf{proposal distribution}.
+По причинам, которые скоро станут понятны, я буду называть $\proposal(\params)$ распределением \textbf{предложений}.
 
 \begin{figure}
 \begin{center}
 \includegraphics[width=\textwidth]{figures/fig6.png}
 \end{center}
-\caption{An illustration of the connection between grids and
-continuous density distributions. As we increase the number
-of grid points, our estimate of the posterior $\posterior(\params)$
-improves (top). Since the spacing between the grid points varies
-to maximize the effective sample size (see \autoref{fig:ess} and
-\S\ref{subsec:ess}), the differential volume elements $\Delta \params_i$
-change depending on our location (middle). As we continue to
-increase the number of volume elements, the density of grid
-points at any particular location 
-$\rho(\params_i) = [\Delta \params_i]^{-1}$ 
-behaves like a continuous function $\proposal(\params)$
-whose distribution is similar to $\posterior(\params)$ (bottom).
-This implies we should be able to use $\proposal(\params)$
-in some way to estimate $\posterior(\params)$.
-See \S\ref{sec:montecarlo} for additional details.
+\caption{Иллюстрация связи между сетками и непрерывными распределениями плотности. По мере увеличения числа точек сетки наша оценка апостериорного $\posterior(\params)$ улучшается (вверху). Поскольку расстояние между точками сетки меняется, чтобы максимизировать эффективный размер выборки (см. \autoref{fig:ess} и \S\ref{subsec:ess}), элементы дифференциального объема $\Delta \params_i$ меняются в зависимости от нашего местоположения (середина). При дальнейшем увеличении количества элементов объема плотность точек сетки в любом конкретном месте $\rho(\params_i) = [\Delta \params_i]^{-1}$ ведет себя как непрерывная функция $\proposal(\params)$, распределение которой похоже на $\posterior(\params)$ (внизу). Это означает, что мы должны быть в состоянии использовать $\proposal(\params)$ каким-то образом для оценки $\posterior(\params)$. Дополнительные подробности см. в \S\ref{sec:montecarlo}.
 }\label{fig:density}
 \end{figure}
 
-At this point, this may mostly seem like a mathematical trick:
-all I have done is rewrite our original \textit{single} 
-expectation value with respect to the (unnormalized)
-posterior $\tilde{\posterior}(\params)$ in terms of \textit{two}
-expectation values with respect to the proposal distribution
-$\proposal(\params)$. 
-This substitution, however, actually allows us to fully realize 
-the connection between grid points and samples.
+Сейчас это может показаться математическим трюком: все, что я сделал, это переписал наше исходное \textit{одно} матожидание относительно (ненормированного) апостериорного $\tilde{\posterior}(\params)$ в терминах \textit{два} матожидания относительно распределения предложения $\proposal(\params)$. Эта замена, однако, на самом деле позволяет нам полностью реализовать связь между точками сетки и выборками.
 
-Earlier, I showed that the estimate for the expectation
-value from grid points is exactly analogous to the estimate
-we would derive assuming the grid points were random samples
-$\{ f_1, \dots, f_n \}$ with associated weights
-$\{ w_1, \dots, w_n \}$. Once we have defined our
-expectation with respect to $\proposal(\params)$, however,
-this statement can become exact assuming we can explicitly generate
-samples from $\proposal(\params)$.
+Ранее я показал, что оценка матожидания для точек сетки в точности аналогична оценке, которую мы получили бы, если бы точки сетки были случайными выборками $\{ f_1, \dots, f_n \}$ с соответствующими весами $\{ w_1, \dots, w_n \}$. Однако после того, как мы определили наше ожидание относительно $\proposal(\params)$, это утверждение может стать точным, если мы можем явно генерировать выборки из $\proposal(\params)$.
 
-Let's quickly review what this means. Initially,
-we looked at trying to estimate $\meanwrt{f(\params)}{\posterior}$ over a grid
-with $n$ points. In the limit of infinite resolution, however, our grid becomes
-equivalent to some distribution $\proposal(\params)$. Using $\proposal(\params)$,
-we can then rewrite our original expression in terms of two expectations,
-$\meanwrt{f(\params) \tilde{\posterior}(\params)/\proposal(\params)}{\proposal}$
-and $\meanwrt{\tilde{\posterior}(\params)/\proposal(\params)}{\proposal}$, over
-$\proposal(\params)$ instead of $\posterior(\params)$.
-This helps us because we can in theory estimate these final expressions
-explicitly using a series of $n$ randomly generated samples from
-$\proposal(\params)$. Due to the randomness inherent in this approach, 
-this is commonly referred to as a \textbf{Monte Carlo} approach for estimating
-$\meanwrt{f(\params)}{\posterior}$ due to historical connections with
-randomness and gambling.
+Давайте быстро рассмотрим, что это значит. Изначально мы рассматривали попытку оценить $\meanwrt{f(\params)}{\posterior}$ по сетке с $n$ точками. Однако в пределе бесконечного разрешения наша сетка становится эквивалентной некоторому распределению $\proposal(\params)$. Используя $\proposal(\params)$, мы можем переписать наше исходное выражение в терминах двух ожиданий, $\meanwrt{f(\params)\tilde{\posterior}(\params)/\proposal(\params)}{\proposal}$ и $\meanwrt{\tilde{\posterior}(\params)/\proposal(\params)}{\proposal}$, над $\proposal(\params)$ вместо $\posterior(\params)$. Это помогает нам, потому что теоретически мы можем оценить эти конечные выражения явно, используя серию из $n$ случайно сгенерированных выборок из $\proposal(\params)$. Из-за случайности, присущей этому подходу, его принято называть \textbf{Монте-Карло} подходом для оценки $\meanwrt{f(\params)}{\posterior}$ из-за исторических связей со случайностью и азартными играми.
 
-On the face of it, this should come across as a surprising claim. When we
-compute an integral of a function $f(\params)$ on a bounded grid, we
-know that there is some error in our approximation having to do with the
-discretization of the grid. This error is entirely \textit{deterministic}:
-given a number of grid points $n$ and an a particular discretization density
-$\proposal(\params) \propto 1/\Delta\params(\params)$, we will get the
-same result (and error) for $\meanwrt{f(\params)}{\posterior}$ every time.
+На первый взгляд, это удивительное утверждение. Когда мы вычисляем интеграл от функции $f(\params)$ на ограниченной сетке, мы знаем, что в нашем приближении есть некоторая ошибка, связанная с дискретизацией сетки. Эта ошибка полностью \textit{deterministic}: учитывая количество точек сетки $n$ и определенную плотность дискретизации $\proposal(\params)\propto 1/\Delta\params(\params)$, мы каждый раз будем получать один и тот же результат (и ошибку) для $\meanwrt{f(\params)}{\posterior}$.
 
-By contrast, drawing $n$ samples $\{\params_1,\dots,\params_n\}$
-from $\proposal(\params)$ is an inherently \textit{random} (i.e. stochastic) 
-process that seems to look nothing like a
-grid of points. And because these points are inherently random,
-the actual deviation between our estimate and the true value of
-$\meanwrt{f(\params)}{\posterior}$ will \textit{also} be random.
-The ``error'' from random samples then tells us something about
-how much we expect our estimate can differ over many possible
-realizations of our random process given a particular number of samples
-$n$ generated from $\proposal(\params)$. The fact that we can derive
-roughly equivalent estimates from these these very different
-approaches as we adjust $n$ and $\proposal(\params)$ lies at the heart of the
-connection between grid points and samples.
+В отличие от этого, построение $n$ образцов $\{\params_1,\dots,\params_n\}$ из $\proposal(\params)$ является по своей сути рандомным (т.е. стохастическим) процессом, который не похож на сетку точек. И поскольку эти точки по своей природе случайны, фактическое отклонение между нашей оценкой и истинным значением $\meanwrt{f(\params)}{\posterior}$ будет тоже случайным. Таким образом, ``ошибка'' от случайных выборок говорит нам о том, насколько сильно может отличаться наша оценка от многих возможных реализаций нашего случайного процесса при определенном количестве выборок $n$, полученных из $\proposal(\params)$. Тот факт, что мы можем получить примерно эквивалентные оценки на основе этих разных подходов при изменении $n$ и $\proposal(\params)$, лежит в основе связи между точками сетки и выборками.
 
-There are three primary benefits from moving from an adaptively-spaced grid
-to a continuous distribution $\proposal(\params)$.
-First, a grid will always have some minimum 
-resolution $\Delta \params_i$ that makes it difficult
-to get our weights to be roughly uniform, limiting our maximum
-ESS in practice. By contrast, we can in theory get
-$\proposal(\params)$ to more closely match the posterior $\posterior(\params)$,
-giving a larger ESS at fixed $n$.
+Есть три основных преимущества перехода от адаптивно распределенной сетки к непрерывному распределению $\proposal(\params)$. Во-первых, сетка всегда будет иметь некоторое минимальное разрешение $\Delta \params_i$, что затрудняет получение приблизительно равномерных весов, ограничивая максимальную ESS на практике. Напротив, теоретически мы можем добиться того, чтобы $\proposal(\params)$ более точно соответствовал апостериору $\posterior(\params)$, что даст большую ESS при фиксированном $n$.
 
-Second, because we are now working with \textit{distributions}
-rather than a finite number of grid points, we are no longer limited
-to some finite volume when estimating expectations. Since distributions can
-range over $(-\infty, +\infty)$, we can guarantee $\proposal(\params)$
-will provide sufficient \textbf{coverage} over all possible $\params$ 
-values that our posterior $\posterior(\params)$ could be defined over.
-This means that some of the theoretical issues raised in \S\ref{subsec:consistent}
-associated with applying grids to posteriors 
-that range over $(-\infty, +\infty)$ no longer apply. 
-Monte Carlo methods therefore can serve as a \textit{consistent}
-estimator for a wider range of possible posterior expectations
-than grid-based methods, making them substantially more flexible.
+Во-вторых, поскольку мы теперь работаем с \textit{распределениями}, а не с конечным числом точек сетки, мы больше не ограничены некоторым конечным объемом при оценке ожиданий. Поскольку распределения могут лежать в диапазоне $(-\infty, +\infty)$, мы можем гарантировать, что $\proposal(\params)$ обеспечит достаточное \textbf{покрытие} по всем возможным значениям $\params$, по которым может быть определено наше послесловие $\posterior(\params)$. Это означает, что некоторые теоретические вопросы, поднятые в \S\ref{subsec:consistent}, связанные с применением сеток к апостериорам, которые варьируются в диапазоне $(-\infty, +\infty)$, больше не применимы. Таким образом, методы Монте-Карло могут служить \textit{согласованными} оценками для более широкого диапазона возможных апостериорных ожиданий, чем методы на основе сеток, что делает их существенно более гибкими.
 
-Finally, the minimum number of grid points always scales exponentially
-with dimensionality (see \S\ref{subsec:curse}), regardless of how many 
-parameters we are interested in marginalizing over. Since 
-Monte Carlo methods do not rely on these, they can take full
-advantage of marginalizing over parameters 
-when estimating expectations $\meanwrt{f(\params)}{\posterior}$. 
-They are therefore less susceptible to this effect 
-(although see \S\ref{subsec:volume}).
+Наконец, минимальное число точек сетки всегда экспоненциально растет с размерностью (см. \S\ref{subsec:curse}), независимо от того, сколько параметров нас интересует для маргинализации. Поскольку методы Монте-Карло не полагаются на них, они могут в полной мере использовать преимущества маргинализации по параметрам при оценке ожиданий $\meanwrt{f(\params)}{\posterior}$. Поэтому они менее подвержены этому эффекту (хотя см. \S\ref{subsec:volume}).
 
-\subsection{Importance Sampling} \label{subsec:importance}
+\subsection{Выборка по важности} \label{subsec:importance}
 
 % The point about being able to draw samples from
 % $\proposal(\params)$ is more than just an option assuming
 % the distribution happens to be easy to simulate from.
-As I have tried to emphasize previously, the core tenet of this article is that
-\textit{we do not know what $\posterior(\params)$ looks like beforehand}.
-This means we do not know what grid structure will
-provide an optimal estimate (i.e. maximum ESS) for
-$\meanwrt{f(\params}{\posterior}$, let alone how this should
-behave as $\proposal(\params)$ in the continuum limit. This gives
-us ample motivation to \textit{choose} $\proposal(\params)$
-in such a way to make generating samples from it easy and straightforward.
+Как я уже пытался подчеркнуть ранее, основной постулат этой статьи заключается в том, что \textit{мы не знаем, как выглядит $\posterior(\params)$ заранее}. Это означает, что мы не знаем, какая структура сетки даст оптимальную оценку (т.е. максимум ESS) для $\meanwrt{f(\params}{\posterior}$, не говоря уже о том, как она должна вести себя в качестве $\proposal(\params)$ в континуальном пределе. Это дает нам достаточную мотивацию для того, чтобы \textit{выбрать} $\proposal(\params)$ таким образом, чтобы сделать генерацию образцов из него простой и понятной.
 
-Assuming we have chosen such a $\proposal(\params)$, we can 
-subsequently generate a series of $n$ samples from it. Assuming
-these samples have weights $q_i$ associated with them and defining
+Предположив, что мы выбрали такое $\proposal(\params)$, мы можем впоследствии сгенерировать из него серию из $n$ образцов. Предположим, что эти образцы имеют веса $q_i$, связанные с ними, и определим
 \begin{equation}
     f(\params_i) \equiv f_i, \quad
     \tilde{\posterior}(\params_i)/\proposal(\params_i) 
     \equiv \tilde{w}(\params_i) \equiv \tilde{w}_i
 \end{equation}
-our original expression reduces to
+наше исходное выражение сводится к
 \begin{equation}
     \meanwrt{f(\params)}{\posterior} 
     = \frac{\meanwrt{f(\params) 
@@ -926,86 +740,45 @@ our original expression reduces to
     \approx \frac{\sum_{i=1}^{n} f_i \tilde{w}_i q_i}
     {\sum_{i=1}^{n} \tilde{w}_i q_i}
 \end{equation}
-If we further assume that we have chosen $\proposal(\params)$ so that
-we can simulate samples that are 
-\textbf{independently and identically distributed (iid)}
-(i.e. each sample has the same probability distribution 
-as the others and all the samples are mutually independent),
-then the corresponding sample weights immediately reduce to 
-$q_i = 1/n$ and our result becomes
+Если далее предположить, что мы выбрали $\proposal(\params)$ так, что можем моделировать выборки, которые \textbf{независимо и идентично распределены (iid)} (т.е. каждая выборка имеет то же распределение вероятности, что и другие, и все выборки взаимно независимы), то соответствующие веса выборок немедленно сводятся к $q_i = 1/n$, и наш результат становится
 \begin{equation}
     \meanwrt{f(\params)}{\posterior} 
     \approx \frac{n^{-1} \sum_{i=1}^{n} f_i \tilde{w}_i}
     {n^{-1} \sum_{i=1}^{n} \tilde{w}_i}
 \end{equation}
-As with the previous case using grids (\S\ref{sec:grid}),
-the denominator of this
-expression is again a direct approximation for the evidence
+Как и в предыдущем случае с сетками (\S\ref{sec:grid}), знаменатель этого выражения снова является прямым приближением для доказательства
 \begin{align}
     \evidence 
     = \int \tilde{\posterior}(\params) \deriv \params
     \approx n^{-1} \sum_{i=1}^{n} \tilde{w}_i
 \end{align}
 
-This gives a straightforward recipe for estimating our original expectation
-value:
+Это дает прямой "рецепт" для оценки нашего исходного значения матожидания:
 \begin{enumerate}
-    \item Draw $n$ iid samples $\{\params_1, \dots, \params_n \}$
-    from $\proposal(\params)$.
-    \item Compute their corresponding weights $\tilde{w}_i =
-    \tilde{\posterior}(\params_i)/\proposal(\params_i)$.
-    \item Estimate $\meanwrt{f(\params)}{\posterior}$
-    by computing $\meanwrt{\tilde{w}(\params)}{\proposal}$ and
-    $\meanwrt{f(\params)\tilde{w}(\params)}{\proposal}$ using the
-    weighted sample means.
+	\item Извлеките $n$ iid образцов $\{\params_1, \dots, \params_n \}$.
+	из $\proposal(\params)$.
+	\item Вычислим их соответствующие веса $\tilde{w}_i =
+	\tilde{\posterior}(\params_i)/\proposal(\params_i)$.
+	\item Оценить $\meanwrt{f(\params)}{\posterior}$. вычислив $\meanwrt{\tilde{w}(\params)}{\proposal}$ и
+	$\meanwrt{f(\params)\tilde{w}(\params)}{\proposal}$ с использованием взвешенных выборочных средних.
 \end{enumerate}
-Since this process just involves ``reweighting'' the samples
-based on $\tilde{w}_i$, these weights are often referred to as
-\textbf{importance weights} and the method as \textbf{Importance Sampling}.
-A schematic illustration of Importance Sampling
-is highlighted in {\color{red} \autoref{fig:importance}}.
+Поскольку этот процесс заключается в "перевзвешивании" выборок на основе $\tilde{w}_i$, эти веса часто называют \textbf{весами важности}, а метод - \textbf{Важной выборкой}. Схематическая иллюстрация выборки по важности приведена на {\color{red} \autoref{fig:importance}}.
 
 \begin{figure}
 \begin{center}
 \includegraphics[width=\textwidth]{figures/fig7.png}
 \end{center}
-\caption{A schematic illustration of Importance Sampling.
-First, we take a given proposal distribution 
-$\proposal(\params)$ (left) and generate a set of $n$ iid samples
-from it (middle left).
-We then weight each sample based on the corresponding
-``importance'' $\tilde{\posterior}(\params)/\proposal(\params)$
-it has at that location (middle right). We then can use these
-weighted samples to approximate posterior expectations
-(right).
-See \S\ref{subsec:importance} for additional details.
+\caption{Схематическая иллюстрация Importance Sampling. Сначала мы берем заданное распределение предложений $\proposal(\params)$ (слева) и генерируем из него набор из $n$ иидных выборок (в середине слева). Затем мы взвешиваем каждый образец на основе соответствующей ``важности'' $\tilde{\posterior}(\params)/\proposal(\params)$, которую он имеет в данном месте (середина справа). Затем мы можем использовать эти взвешенные выборки для аппроксимации апостериорных ожиданий (справа). Дополнительные сведения см. в \S\ref{subsec:importance}.
 }\label{fig:importance}
 \end{figure}
 
-We can interpret the importance weights as ways to correct for how
-``far off'' our original guess $\proposal(\params)$ 
-is from the truth $\posterior(\params)$.
-If the posterior density is higher at position
-$\params_i$ relative to the proposal density, 
-then we were less likely to generate
-a sample at that position compared to what we would have
-seen if we had drawn samples directly from the posterior.
-As a result, we should increase its corresponding weight
-to account for this expected deficit of samples at a given position.
-If the posterior density is lower relative to the proposal density, 
-then the alternative is true and we want to lower the weight of the
-corresponding sample to account for the expected excess of samples
-at a given position.
+Мы можем интерпретировать веса важности как способ коррекции того, насколько "далека" наша первоначальная догадка $\proposal(\params)$ от истины $\posterior(\params)$. Если в позиции $\params_i$ апостериорная плотность выше по сравнению с плотностью предложения, значит, мы с меньшей вероятностью сгенерировали выборку в этой позиции по сравнению с тем, что было бы, если бы мы брали выборки непосредственно из апостериорной. В результате мы должны увеличить соответствующий вес, чтобы учесть этот ожидаемый дефицит образцов в данной позиции. Если апостериорная плотность меньше плотности предложения, то верна альтернатива, и мы должны уменьшить вес соответствующего образца, чтобы учесть ожидаемый избыток образцов в данной позиции.
 
-\subsection{Examples of Sampling Strategies} \label{subsection:samp_strat}
+\subsection{Примеры стратегий выборки} \label{subsection:samp_strat}
 
-Importance Sampling serves as a useful first step for understanding how
-the weights $\{ \tilde{w}_1, \dots, \tilde{w}_n \}$ for the corresponding set 
-of $n$ samples are related to different Monte Carlo sampling strategies.
+Выборка важности служит полезным первым шагом для понимания того, как веса $\{ \tilde{w}_1, \dots, \tilde{w}_n \}$ для соответствующего набора образцов $n$ связаны с различными стратегиями выборки Монте-Карло.
 
-As an example, one common approach is to generate samples uniformly within some 
-cuboid with volume $V$. The proposal distribution for this
-will then be
+Например, одним из распространенных подходов является равномерная генерация образцов в пределах некоторого кубоида с объемом $V$. Тогда распределение предложения будет иметь вид
 \begin{equation}
     \proposal^{\rm unif}(\params) =
     \begin{cases}
@@ -1013,8 +786,7 @@ will then be
     0 & {\rm otherwise}
     \end{cases}
 \end{equation}
-The corresponding importance weights subsequently will
-just be proportional to the posterior at a given position:
+Соответствующие веса важности впоследствии будут просто пропорциональны апостериору в данной позиции:
 \begin{equation}
     \tilde{w}_i^{\rm unif}
     = \frac{\tilde{\posterior}(\params_i)}{\proposal^{\rm unif}(\params_i)}
@@ -1022,16 +794,11 @@ just be proportional to the posterior at a given position:
     \propto \posterior(\params_i)
 \end{equation}
 
-Another possible approach would be if we instead take our proposal
-to be our prior:
+Другой возможный подход заключается в том, чтобы принять наше предложение за предварительное:
 \begin{equation}
     \proposal^{\rm prior}(\params) = \prior(\params)
 \end{equation}
-This seems like a well-motivated choice: the prior characterizes
-our knowledge before looking at the data, so it should serve
-as a useful first guess and encompass the range of all possibilities.
-Under this assumption, we now find our weights will be 
-equal to the likelihood $\likelihood(\params)$ at each position:
+Это кажется вполне оправданным выбором: предшествующее значение характеризует наши знания до изучения данных, поэтому оно должно служить полезной первой догадкой и охватывать диапазон всех возможностей. При таком предположении мы находим, что наши веса будут равны вероятности $\likelihood(\params)$ для каждой позиции:
 \begin{equation}
     w_i^{\rm prior} 
     = \frac{\tilde{\posterior}(\params_i)}{\proposal^{\rm prior}(\params_i)}
@@ -1039,14 +806,11 @@ equal to the likelihood $\likelihood(\params)$ at each position:
     = \likelihood(\params_i)
 \end{equation}
 
-Finally, notice that the optimal sampling strategy is to
-assume that we can take our proposal to be identical to our
-posterior:
+Наконец, обратите внимание, что оптимальная стратегия выборки заключается в предположении, что мы можем принять наше предложение идентичным нашему апостериору:
 \begin{equation}
     \proposal^{\rm post}(\params) = \posterior(\params)
 \end{equation}
-The corresponding weights will then just be constant and
-equal to the evidence $\evidence$:
+Тогда соответствующие веса будут просто постоянными и равными доказательству $\evidence$:
 \begin{equation}
     w_i^{\rm post} 
     = \frac{\tilde{\posterior}(\params_i)}{\proposal^{\rm post}(\params_i)}
@@ -1054,18 +818,7 @@ equal to the evidence $\evidence$:
     = \evidence
 \end{equation}
 
-As expected, this final result guarantees the maximum
-possible ESS of $n_{\rm eff} = n$. Getting
-$\proposal(\params)$ to be as ``close'' as possible
-to $\posterior(\params)$ therefore becomes a crucial part of
-analyses when trying to use Importance Sampling 
-to estimate expectation values. It is this result in particular 
-that motivates the use of Markov Chain Monte Carlo (MCMC) methods
-discussed from \S\ref{sec:mcmc} onward:
-if we can somehow generate samples \textit{directly}
-from $\posterior(\params)$ or something close to it, 
-then we can achieve an optimal estimate of our
-corresponding expectation values.
+Как и ожидалось, этот результат гарантирует максимально возможную ESS, равную $n_{\rm eff} = n$. Таким образом, получение $\proposal(\params)$ как можно ближе к $\posterior(\params)$ становится важной частью анализа при попытке использовать Importance Sampling для оценки значений ожиданий. Именно этот результат, в частности, мотивирует использование методов Марковской цепи Монте-Карло (MCMC), обсуждаемых с \S\ref{sec:mcmc} и далее: если мы можем каким-то образом генерировать выборки \textit{прямо} из $\posterior(\params)$ или что-то близкое к нему, то мы можем достичь оптимальной оценки соответствующих значений ожиданий.
 
 \subsection*{Exercise: Importance Sampling over a 2-D Gaussian} 
 \label{exercise:importance}
