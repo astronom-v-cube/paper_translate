@@ -1,0 +1,1530 @@
+\section{Bayesian Inference} \label{sec:bayes}
+
+In many scientific applications, we have access to some \textbf{data} $\data$
+that we want to use to make inferences about the world around us.
+Most often, we want to interpret these data in light of an underlying
+\textbf{model} $M$ that can make predictions about the data we expect
+to see as a function of some \textbf{parameters} $\params_M$ of that
+particular model.
+
+We can combine both of these pieces together to estimate the
+\textbf{probability} $P(\data|\params_M, M)$ 
+that we would actually see that data $\data$ we have
+collected \textit{conditioned on} (i.e. assuming)
+a specific choice of parameters $\params_M$ from our model $M$.
+In other words, assuming our model $M$ is right and
+the parameters $\params_M$ describes the data, what is the
+\textbf{likelihood} $P(\data|\params_M, M)$ that we
+actually would observe $\data$? Assuming different values
+of $\params_M$ will gives different likelihoods, telling us
+which parameter choices appear to best describe the data we
+observe.
+
+In Bayesian inference, we are interested in
+inferring the opposite quantity $P(\params_M|\data, M)$.
+This describes the probability that the 
+underlying \textit{parameters} are actually $\params_M$ 
+given our data $\data$ and assuming a particular model $M$.
+By using factoring of probability, we can relate this new
+probability $P(\params_M|\data, M)$ to the likelihood
+$P(\data|\params_M, M)$ described above as
+\begin{equation}
+    P(\params_M | \data, M) P(\data | M) 
+    = P(\params_M, \data | M)
+    = P(\data | \params_M, M) P(\params_M | M)
+\end{equation}
+where $P(\params_M, \data | M)$ represents the \textit{joint}
+probability of having an underlying set of parameters $\params_M$
+that describe the data and observing the particular set of data $\data$
+we have already collected.
+
+Rearranging this equality into a more convenient form 
+gives us \textbf{Bayes Theorem}:
+\begin{equation}
+    P(\params_M | \data, M) 
+    = \frac{P(\data | \params_M, M) P(\params_M | M)}{P(\data | M)}
+\end{equation}
+This equation now describes exactly how our two probabilities relate to each other.
+
+As before, $P(\data | \params_M, M)$ is the \textbf{likelihood}. This
+describes is the probability that we would have observed our data $\data$
+given the parameters $\params_M$ for our particular model $M$. To put this
+another way, the likelihood essentially poses the following thought experiment:
+if we decide that $\params_M$ is the true underlying parameter values for our
+model $M$, what is the probability that we would observe our data $\data$?
+
+$P(\params_M | M)$ is often referred to as the \textbf{prior}. This describes
+the probability of having a particular parameter $\params_M$
+for our given model $M$ \textit{before conditioning on our data}. In other words:
+before we saw our data $\data$, what would be have thought it the probability
+that $\params_M$ is actually the true underlying parameter values?
+Because this is independent of the data, this term
+is often interpreted as representing 
+our ``prior beliefs'' about what $\params_M$ \textit{should}
+be based on previous measurements, physical concerns, 
+and other known factors. In practice, this has the effect of essentially
+``augmenting'' the data with other information.
+
+The denominator
+\begin{equation}
+    P(\data | M) = \int P(\data | \params_M, M) P(\params_M | M) \deriv \params_M
+\end{equation}
+is known as the \textbf{evidence} or \textbf{marginal likelihood}
+for our model $M$ \textit{marginalized} over all possible parameters $\params_M$.
+This is a constant that broadly tries to answer the question:
+how well does our model $M$ explain the data, averaged over
+all possible values $\params_M$ of the true underlying parameters?
+Models that do a reasonable job overall thus tend to be favored 
+over models that can do a better job sometimes but 
+don't perform as well as in general.
+
+Finally, $P(\params_M | \data, M)$ represents our \textbf{posterior}.
+This quantifies our belief in $\params_M$ after combining our
+prior intuition $P(\params_M|M)$ with
+current observations $P(\data|\params_M,M)$ 
+and normalizing by the overall evidence $P(\data|M)$.
+In other words: given what we knew beforehand and what the data
+tells us, what do we think we now know about $\params_M$?
+This will always be some compromise between the prior and 
+the likelihood, with the exact combination depending
+on the strength and properties of the prior and the quality
+of the data used to derive the likelihood.
+
+Throughout the rest of the paper we will write 
+these four terms (likelihood, prior, evidence, posterior)
+using shorthand notation such that
+\begin{equation}
+    \posterior(\params) 
+    \equiv \frac{\likelihood(\params)\prior(\params)}{
+    \int \likelihood(\params)\prior(\params) \deriv \params}
+    \equiv \frac{\likelihood(\params)\prior(\params)}{\evidence}
+    \propto \likelihood(\params)\prior(\params)
+\end{equation}
+where $\posterior(\params) \equiv P(\params_M | \data, M)$ is the posterior,
+$\likelihood(\params) \equiv P(\data | \params_M, M)$ is the likelihood,
+$\prior(\params) \equiv P(\params_M | M)$ is the prior, and the constant
+$\evidence \equiv P(\data | M)$ is the evidence. We have suppressed the
+model subscript for convenience here since in most cases we will only
+be examining a single model, but will re-introduce it as necessary.
+
+\subsection{Example: Coin Flips}
+
+As an illustrative example just to explore the basic concepts of
+Bayesian inference, let's imagine that we have observations of three
+coin flips $\data = \{ H, H, H\}$ from a coin containing a ``heads''
+side $H$ and ``tails'' sides $T$.
+We would like to infer the probability $p$ that the coin will
+come up heads. Assuming all the coin flips are independent, the probability
+that all three come up heads is just the product of
+the probability of coming up heads each time:
+\begin{equation}
+    P(\{ H, H, H\} | p) 
+    = P(H|p) \times P(H|p) \times P(H|p)
+    = p^3
+\end{equation}
+
+Using our likelihood, let's now examine two possibilities.
+In the first case, let's assume the coin is fair with $p=0.5$
+so that we have an equal probability of getting heads or tails.
+In this case, the likelihood is
+\begin{equation}
+    \likelihood_{3H}(p=0.5) = (0.5)^3 = 0.125
+\end{equation}
+
+In the second case, let's assume instead that the
+coin is totally biased with $p=1$ so that we
+always will get heads. We might expect this
+behavior if we have a double-sided coin with two
+heads. Here, we instead get a likelihood of
+\begin{equation}
+    \likelihood_{3H}(p=1) = (1)^3 = 1
+\end{equation}
+
+Our results imply that, based on the data alone,
+the $p=1$ case is 8x more likely than $p=0.5$.
+So naively it appears quite likely that
+the coin is totally biased.
+
+Our experiences with coins, however, heavily discounts this
+view. We intuitively know that seeing three heads in a 
+row can occur reasonably often (12.5\% of the time) for 
+coins that are fair, and so this probably should not be enough evidence to
+believe a coin is biased (let alone by such a substantial amount).
+
+As a starting point, we can probably say
+the vast majority of coins we have encountered
+have most likely been roughly fair, with $p \approx 0.5$.
+That said, we likely haven't experimented with all
+of them to confirm this is the case.
+
+Let's try to quantify this intuition. Our
+prior should favor the idea that a random coin is fair,
+but allow for some uncertainty since we don't know
+exactly how much variation there can be between random coins.
+As a starting point, let's consider
+a truncated Normal distribution centered at $\mu_p=0.5$ with a 
+width of $\sigma_p=0.2$:
+\begin{equation}
+    \prior(p) \approx 2.02 \times
+    \begin{cases}
+    \exp\left[-\frac{1}{2}\frac{(p - 0.5)^2}{(0.2)^2}\right] & 0 \leq p \leq 1 \\
+    0 & {\rm otherwise}
+    \end{cases}
+\end{equation}
+The truncation at $p < 0$ and $p > 1$ codifies the fact that
+the chance of getting heads is between 0\% and 100\% (so we can't
+have guesses outside of that range). The prior is maximized at
+$p=0.5$, giving the most weight to the coin being fair. And
+our choice of $\sigma_p=0.2$ means that we believe there is a
+roughly 70\% chance that the true value of $p$ lies between
+$0.3$ and $0.7$ and a 95\% chance that is between
+$0.1$ and $0.9$. And the $0.49$ value just ensures that
+our prior integrates to 1.
+
+Given this prior, our posterior for the coin being fair is then
+\begin{equation}
+    \posterior_{3H}(p=0.5) \approx (2.02) (1) (0.5)^3 \approx 0.25
+\end{equation}
+while our posterior for it being totally biased is
+\begin{equation}
+    \posterior_{3H}(p=1) \approx (2.02) (0.04) (1)^3 \approx 0.04
+\end{equation}
+Compared with our likelihood, our posterior actually points
+us to almost the exact opposite answer, informing us that
+$p=1$ is roughly 3x \textit{less} probable than $p=0.5$ 
+under our prior assumptions. So even though the data haven't changed, 
+the inferences based on our observations are completely different.
+
+To get a sense of how our prior belief in fairness impacts these
+results, let's consider the case where we could observe some more coin flips.
+How many consecutive heads would it take to prefer 
+$p=1$ over $p=0.5$? It turns out it takes no fewer than 
+$n=5$ consecutive heads to get an posterior probability
+\begin{equation}
+    \posterior_{5H}(p=0.5)
+    \approx (2.02) (1) (0.5)^5
+    \approx 0.06 < 0.08
+\end{equation}
+that even slightly disfavors $p=0.5$. Put another way, 
+our prior belief that the coin is somewhat fair means 
+we would need to observe at least five heads in a row
+before we might start to favor the explanation that
+something suspicious might be going on (i.e. $p=1$).
+
+This example highlights one extremely crucial element to
+any Bayesian analysis: \textit{the interpretation of any result is
+only as good as the models and priors that underlie them}.
+Trying to explore the implications of any particular model
+is fundamentally a secondary concern behind constructing 
+a reasonable model with well-motivated priors. 
+We strongly encourage readers to keep this idea in mind
+throughout the remainder of this work.
+
+\section{What are Posteriors For?} \label{sec:what}
+
+Above, we described how Bayes Theorem is able to combine
+our prior beliefs and the observed data into a new posterior estimate 
+$\posterior(\params) \propto \likelihood(\params) \prior(\params)$.
+We also showed how this can work in practice using a simple example
+involving coin flips to highlight how different prior beliefs
+can impact our interpretation of the data.
+
+This, however, is only half of the problem. Once we have
+the posterior, we need to then \textit{use} it to
+make inferences about the world around us. For instance,
+in the coin-flipping example we explored above, we examined how much
+the posterior favored one particular value for the probability $p$
+of landing on heads versus another.
+
+In general, the ways in which we want to use posteriors
+fall into four broad categories:
+\begin{enumerate}
+    \item \textbf{Making educated guesses}:
+    make a reasonable guess at what the underlying model parameters are.
+    \item \textbf{Quantifying uncertainty}:
+    provide constraints on the range of possible parameter values.
+    \item \textbf{Generating predictions}:
+    marginalize over uncertainties in the underlying parameters 
+    to predict what will happen next.
+    \item \textbf{Comparing models}:
+    use the evidences from different models
+    to try and favor some models over others.
+\end{enumerate}
+
+In order to do accomplish these goals,
+we are often more interested in trying to use the
+posterior to estimate various constraints on the parameters
+$\params$ themselves or other quantities $f(\params)$ that
+might be based on them. For instance, in the coin-flipping
+example above, we might try to ask questions such as:
+\begin{itemize}
+    \item What is our best guess for $p$?
+    \item What values of $p$ can we rule out?
+    \item What are the chances the next three coin flips
+    will be heads?
+    \item Is our original model well-motivated compared
+    with possible alternatives?
+\end{itemize}
+
+In general, questions like these depend on marginalizing
+(i.e. \textit{integrating}) over the uncertainties 
+characterized by our posterior (via the likelihood
+and prior). The evidence, for instance, is again just the integral
+of the likelihood and the prior over all possible parameters:
+\begin{equation}
+    \evidence 
+    = \int \likelihood(\params) \prior(\params) \deriv \params
+\end{equation}
+Likewise, if we are interested in just the behavior of a subset of
+parameters $\params_{\rm int}$ from 
+$\params = \{ \params_{\rm int}, \params_{\rm nuis} \}$,
+we can marginalize over the behavior of the 
+``nuisance'' parameters $\params_{\rm nuis}$ to get:
+\begin{equation}
+    \posterior(\params_{\rm int}) 
+    = \int \posterior(\params) \deriv \params_{\rm nuis}
+    = \int \posterior(\params_{\rm int}, \params_{\rm nuis}) \, \deriv \params_{\rm nuis}
+\end{equation}
+
+Other quantities can generally be derived from the \textbf{expectation value}
+of various parameter-dependent functions $f(\params)$ with respect to the posterior:
+\begin{equation}
+    \meanwrt{f(\params)}{\posterior} 
+    \equiv \frac{\int f(\params) \posterior(\params) \deriv \params}
+    {\int \posterior(\params) \deriv \params} 
+    = \frac{\int f(\params) \likelihood(\params) \prior(\params) \deriv \params}
+    {\int \likelihood(\params) \prior(\params) \deriv \params}
+\end{equation}
+This represents a weighted average of $f(\params)$
+where at each value $\params$ we weight the resulting
+$f(\params)$ proportional to the chance we believe that value is correct 
+$\posterior(\params) \propto \likelihood(\params) \prior(\params)$.
+
+Taken together, we see that \textit{in almost all cases we are usually
+more interested in computing integrals over the posterior
+rather than knowing the posterior itself.}
+Asking even basic questions like ``Is my coin fair?''
+not only requires computing the posterior for a specific value ($p=0.5$) but 
+likely comparing it to all other possible values ($p \neq 0.5$).
+To put this another way, the posterior is rarely ever useful on its
+own; it becomes useful by integrating over it.
+
+This distinction between estimating expectations
+$\meanwrt{f(\params)}{\posterior}$ and other integrals
+over the posterior versus estimating the posterior 
+$\posterior(\params)$ in-and-of-itself is a key element of Bayesian inference.
+This distinction is hugely important when it comes
+to actually doing inference in practice, since it
+is often the case that we can get an excellent estimate of
+$\meanwrt{f(\params)}{\posterior}$ even if we have an
+extremely poor estimate of $\posterior(\params)$.
+
+\subsection{Making Educated Guesses} \label{subsec:guess}
+
+One of the core tenets of Bayesian inference is that
+we don't know the true model $M_*$ or its underlying parameters
+$\params_*$ that characterize the data we observe. If
+we assume that our current model $M$ is correct, however,
+we can try to use our posterior $\posterior(\params)$
+to propose a \textbf{point estimate} $\hat{\params}$
+that we think is a pretty good guess for $\params_*$.
+
+What exactly counts as ``good''? This depends on exactly what we care
+about. In general, we can quantify this by asking the opposite question:
+how badly are we penalized if our estimate $\hat{\params} \neq \params_*$
+is wrong? This is often encapsulated through the use of
+a \textbf{loss function} $L(\hat{\params}|\params_*)$
+that penalizes us when our point estimate $\hat{\params}$
+is not equal to $\params_*$. Common loss functions 
+include \textbf{squared loss}
+\begin{equation}
+    L(\hat{\params}|\params_*) = |\hat{\params} - \params_*|^2
+\end{equation}
+where the penalty goes as the square of the magnitude of the offset,
+\textbf{absolute loss}
+\begin{equation}
+    L(\hat{\params}|\params_*) = |\hat{\params} - \params_*|
+\end{equation}
+where the penalty is directly proportional to the magnitude of the offset,
+and \textbf{0-1 loss}
+\begin{equation}
+    L(\hat{\params}|\params_*) = \indicator{|\hat{\params} - \params_*| \neq 0}
+\end{equation}
+where
+\begin{equation}
+    \indicator{|\hat{\params} - \params| \neq 0}
+    = \begin{cases}
+    1 & |\hat{\params} - \params| \neq 0 \\
+    0 & {\rm otherwise}
+    \end{cases}
+\end{equation}
+is the \textbf{indicator function} which evaluates to $1$
+if the condition is true and $0$ otherwise. In other words,
+0-1 loss gives a flat penalty for any point estimate $\hat{\params}$
+that doesn't agree \textit{exactly} with the underlying
+$\params_*$ (and no penalty if it does).
+
+Unfortunately, we don't know what the actual value of
+$\params_*$ is to actually evaluate the loss. However,
+we can do the next best thing and compute the \textbf{expected loss}
+averaged over all possible values of $\params_*$ based on
+our posterior:
+\begin{equation}
+    L_\posterior(\hat{\params})
+    \equiv \meanwrt{L(\hat{\params}|\params)}{\posterior}
+\end{equation}
+The best guess we can make then is to choose our point estimate
+$\hat{\params}$ to be one that minimizes the expected loss
+\begin{equation}
+    \hat{\params} 
+    \equiv \argmin_{\params} \left[L_\posterior(\params)\right]
+\end{equation}
+So we see that trying to do something as simple as just making
+a good guess requires integrating over the posterior.
+
+While this strategy can work for any arbitrary loss function, solving
+for $\hat{\params}$ often requires using numerical methods and repeated
+integration over $\posterior(\params)$.
+However, for the three specific loss functions 
+we explored above, it can be shown that the optimal point estimate
+$\hat{\params}$ ends up being:
+\begin{itemize}
+    \item the \textbf{mean} of the posterior under squared loss,
+    \item the \textbf{median}\footnote{
+    Note that since the median is not uniquely defined in more than one
+    dimension, absolute loss ultimately gives rise to an
+    entire \textit{class} of optimal estimates in higher dimensions.}
+    of the posterior under absolute loss, and
+    \item the \textbf{mode} of the posterior under 0-1 loss.
+\end{itemize}
+
+As an illustration of how this works in practice,
+let's return to our coin flipping example. Our posterior
+$\posterior_{3H}(p)$ for $p$ after three heads is
+\begin{equation}
+    \posterior_{3H}(p) \approx
+    11.24 \times
+    \begin{cases}
+    p^3 \exp\left[-\frac{1}{2}\frac{(p - 0.5)^2}{(0.2)^2}\right] & 0 \leq p \leq 1 \\
+    0 & {\rm otherwise}
+    \end{cases}
+\end{equation}
+where the normalizing factor of $11.24 \approx \evidence^{-1}$
+again just ensures the posterior integrates to 1.
+
+Solving for $p_{\rm mean}$ gives
+\begin{equation}
+    \hat{p}_{\rm mean} 
+    \equiv \meanwrt{p}{\posterior}
+    = \int p \, \posterior_{3H}(p) \deriv p
+    \approx 0.672
+\end{equation}
+Solving for $p_{\rm med}$ gives
+\begin{equation}
+    \int_0^{\hat{p}_{\rm med}} \posterior_{3H}(p) \deriv p
+    = \int_{\hat{p}_{\rm med}}^1 \posterior_{3H}(p) \deriv p
+    \quad \Rightarrow \quad \hat{p}_{\rm med} \approx 0.676
+\end{equation}
+Solving for $p_{\rm mode}$ gives
+\begin{equation}
+    \hat{p}_{\rm mode} 
+    \equiv \argmax_{p} \left[\posterior_{3H}(p)\right]
+    \approx 0.677
+\end{equation}
+Finally, let's consider an alternate, more ``conservative'' loss function
+\begin{equation}
+    L_{\rm cons}(\hat{p}|p_*) = |\hat{p} - p_*|^5
+\end{equation}
+that penalizes us much more heavily for guessing 
+values that are further away from the true $p_*$. This gives:
+\begin{equation}
+    \hat{p}_{\rm cons} = \argmin_{\hat{p}}
+    \left[\int_0^1 |\hat{p} - p |^5 \posterior_{3H}(p) \deriv p \right]
+    \approx 0.657
+\end{equation}
+
+We first notice that all our estimates are prefer values of $p > 0.5$.
+This occurs because the likelihood $\likelihood_{3H}(p) \propto p^3$
+prefers larger values of $p$ given the observed string of heads
+even though our prior $\prior(p)$ is symmetric around $p=0.5$.
+This showcases the impact the data (three consecutive heads) has
+on our point estimate.
+
+In addition, we see all our estimates give slightly different answers,
+with the estimate $\hat{p}$ decreasing as our loss function becomes
+more strict, with $\hat{p}_{\rm mode} \approx 0.677$ with 0-1 loss,
+$\hat{p}_{\rm med} \approx 0.676$ with absolute loss, 
+$\hat{p}_{\rm mean} \approx 0.672$ with squared loss,
+and $\hat{p}_{\rm cons} \approx 0.657$ with more conservative
+quintic loss. This occurs because of the asymmetry in our posterior:
+although our posterior implies that there is a greater chance that
+$p_* > 0.5$, there is a non-zero chance that it could be smaller.
+If that is the case, we would be further off than if we had guessed
+a smaller number, leading to a proportionately larger penalty
+and consequently estimates closer to $p=0.5$. In other words,
+the larger our penalty for $\hat{p}$ being far away from $p_*$,
+the more we try and guard against the worst possible case
+instead of looking for the best possible case.
+
+\subsection{Quantifying Uncertainty} \label{subsec: guess}
+
+In many cases, we are not just interested in computing
+a prediction $\hat{\params}$ for $\params_*$ but also constraining
+a region $\credible(\params)$ of possible values 
+that $\params_*$ might be with some amount of certainty.
+In other words, can we construct a region $\credible_X$
+such that we believe there is an $X\%$ chance that it contains
+$\params_*$?
+
+There are infinitely many possible definitions
+for this \textbf{credible region}. One unique definition,
+however, is defining it to be
+the region(s) above some posterior threshold $\posterior_X$
+where $X\%$ of the posterior is contained, i.e. where
+\begin{equation}
+    \int_{\params \,\in\, \credible_X} \posterior(\params) \deriv \params
+    = X/100
+\end{equation}
+given
+\begin{equation}
+    \credible_X
+    \equiv \left\{ \params : \posterior(\params) \geq \posterior_X \right\}
+\end{equation}
+\textbf{An example of how this works is shown in schematic figure}.
+
+Returning to our coin-flipping example, let's try to compute
+the 1-D \textbf{credible interval} defined above 
+for various levels of credibility. If we want to define the 70\%
+credible interval for $p$, we find that
+\begin{equation}
+    \posterior_{70} \approx 1.47
+    \quad \Rightarrow \quad
+    \credible_{70} \approx [0.508, 0.853]
+\end{equation}
+where $[0.508, 0.853]$ encompasses all values of $p$ from $p=0.508$
+to $p=0.853$, inclusive.
+Likewise, the 95\% credible interval is
+\begin{equation}
+    \posterior_{95} \approx 0.57
+    \quad \Rightarrow \quad
+    \credible_{95} \approx [0.389, 0.985]
+\end{equation}
+So we are 70\% certain that the true $p_*$ is within
+$[0.508,0.853]$ and 95\% certain that it lies between
+$[0.389, 0.985]$. This allows us to try and rule out values
+of $p_*$ being outside of these regions provided we are
+comfortable with having a 100-X\% chance of being wrong.
+For instance, there is only a 5\% chance
+that $p < 0.389$ or $p > 0.985$, so we might feel relatively
+confident saying that $p \neq 1$ given the data we have.
+
+\subsection{Making Predictions} \label{subsec:pred}
+
+In addition to trying to estimate the underlying parameters of our
+model, we often also want to make predictions about what might happen next.
+If we think we know the underlying true model parameters $\params_*$
+this process is straightforward. We, however, only have access to the
+posterior distribution $\posterior(\params)$ over possible
+values $\params_*$ could take. Predicting what will happen thus
+requires marginalizing over this uncertainty.
+
+We can quantify this intuition using the \textbf{posterior predictive}:
+\begin{equation}
+    P(\tilde{\data}|\data) 
+    \equiv \int P(\tilde{\data}|\params) P(\params|\data) \deriv \params
+    \equiv \int \tilde{\likelihood}(\params) \posterior(\params) \deriv \params
+    = \meanwrt{\tilde{\likelihood}(\params)}{\posterior}
+\end{equation}
+This represents the likelihood $\tilde{\likelihood}(\params)$
+of seeing hypothetical data $\tilde{\data}$ after averaging over all possible
+values of $\params$ based on the current posterior $\posterior(\params)$.
+
+Let's return to our coin-flipping example to again get a sense of 
+how the posterior predictive works in practice. Say we are interested
+in the probability that the \textit{next} three coin tosses will
+also be heads. The probability of that occurring is
+\begin{equation}
+    \tilde{\likelihood}(p) = \likelihood_{3H}(p) = p^3
+\end{equation}
+Plugging this into our expression for the posterior predictive gives
+\begin{equation}
+    P({\rm 3\:more\:heads} \,|\, {\rm 3\:heads})
+    = \int_0^1 p^3 \posterior_{3H}(p) \deriv p
+    \approx 0.35
+\end{equation}
+
+What does this tell us? Naively, if we expected our coin was fair,
+the chance of getting three more heads would just be $(0.5)^3=0.125$
+(12.5\%). However, after witnessing a previous string of heads,
+our posterior belief is that the coin is more likely to be biased
+with $p>0.5$. This gives a higher likelihood of getting a subsequent
+string of heads, with the likelihood favoring larger biases
+since it goes as $\propto p^3$.
+
+As a sanity check, we can also compute the posterior predictive
+for the other three options: two heads and one tail, two tails and
+one heads, and three tails. Including contributions from random
+permutations (i.e. $\{ H, H, T\}$, $\{ H, T, H\}$, and $\{ T, H, H\}$
+all are two heads and one tail, etc.), we get:
+\begin{align}
+    P({\rm 2\:more\:heads,\:1\:tails} \,|\, {\rm 3\:heads})
+    &= \int_0^1 3 p^2 (1-p) \posterior_{3H}(p) \deriv p
+    \approx 0.37 \\
+    P({\rm 1\:more\:heads,\:2\:tails} \,|\, {\rm 3\:heads})
+    &= \int_0^1 3 p (1-p)^2 \posterior_{3H}(p) \deriv p
+    \approx 0.22 \\
+    P({\rm 3\:tails} \,|\, {\rm 3\:heads})
+    &= \int_0^1 (1-p)^3 \posterior_{3H}(p) \deriv p
+    \approx 0.06
+\end{align}
+The combined sum of all possible outcomes is
+$0.35 + 0.37 + 0.22 + 0.06 = 1$, as expected.
+
+\subsection{Comparing Models} \label{subsec:evid}
+
+One final point of interest in many Bayesian analyses is
+trying to investigate whether the data particularly favor
+any of the model(s) we are assuming in our analysis.
+Our choice of priors or the particular way we parameterize the
+data can lead to substantial differences in the way we
+might want to interpret our results.
+
+In Bayesian inference, we can compare two models by computing
+the \textbf{Bayes factor}:
+\begin{equation}
+    \bayesfactor
+    \equiv \frac{P(M_{\rm 1}|\data)}{P(M_{\rm 2}|\data)}
+    = \frac{P(\data|M_{\rm 1})P(M_{\rm 1})}{P(\data|M_{\rm 2})P(M_{\rm 2})}
+    = \frac{\evidence_{\rm 1}}{\evidence_{\rm 2}} 
+    \frac{\prior_{\rm 1}}{\prior_{\rm 2}}
+\end{equation}
+where $\evidence_M$ is again the evidence for model $M$ 
+and $\prior_M$ is our prior belief that $M$ 
+is correct relative to the competing model.
+Taken together, the Bayes factor $\bayesfactor$ tells us
+how much a particular model is favored over another given the
+observed data, marginalizing over all possible values of the underlying
+model parameters $\params_M$, and our previous relative confidence in the model.
+
+Again, let's return to our coin-flipping example to get a sense for how this
+works. As our starting model we'll consider the prior we've been using in
+our previous examples. Plugging in and integrating gives
+\begin{equation}
+    \evidence_0
+    \equiv \int_0^1 \likelihood_{3H}(p) \prior(p|M_0) \deriv p
+    \approx 2.02 \int_0^1 p^3 
+    \exp\left[-\frac{1}{2}\frac{(p - 0.5)^2}{(0.2)^2}\right] \deriv p
+    \approx 0.18
+\end{equation}
+
+Let's consider two alternatives. In the first case, we
+assume the coin is completely fair so that $p=0.5$. This means
+our prior is effectively
+\begin{equation}
+    \prior(p|M_{\rm fair}) = \delta(p - 0.5)
+\end{equation}
+where $\delta(p-0.5)$ is the Dirac delta function
+centered at $p=0.5$. This gives an evidence of
+\begin{equation}
+    \evidence_{\rm fair} 
+    = \int_0^1 p^3 \delta(p-0.5) \deriv p
+    = \left. p^3 \right|_{p=0.5}
+    = (0.5)^3 = 0.125
+\end{equation}
+In the second, we will instead assume there is no reason 
+for us to express any preferences for a particular value of $p$.
+The prior in that case is just
+\begin{equation}
+    \prior(p|M_{\rm unif}) = 1
+\end{equation}
+This gives an evidence of
+\begin{equation}
+    \evidence_{\rm unif}
+    = \int_0^1 p^3 \deriv p
+    = 0.25
+\end{equation}
+
+Let's assume we're not particularly confident in any model
+relative to each other such that 
+$\prior_0 = \prior_{\rm fair} = \prior_{\rm unif} = 1/3$.
+We see that the largest Bayes factor is between 
+$M_{\rm fair}$ and $M_{\rm unif}$, where
+\begin{equation}
+    \bayesfactor^{\rm unif}_{\rm fair}
+    = \frac{\evidence_{\rm unif}}{\evidence_{\rm fair}}
+    \frac{\prior_{\rm unif}}{\prior_{\rm fair}}
+    = \frac{0.25}{0.125}\frac{1/3}{1/3} 
+    = 2
+\end{equation}
+This indicates that, given the data and our prior
+beliefs in which model is right, the data prefer
+$M_{\rm unif}$ over $M_{\rm fair}$ (i.e. weaker assumptions)
+by a factor of two. As a rule of thumb, we generally want
+$\bayesfactor \gg 1$ before being confident that the data
+substantially favors one model over the other.
+
+\subsection{Example: Linear Regression}
+
+3-D example that can highlight: corner plots (marginalization),
+Gaussian behavior. Better lead in to subsequent section.
+
+\section{Posterior Estimation with Grids}
+
+In many modern analyses involving complicated data and models, the posterior
+$\posterior(\params)$ that we are interested in estimating is often significantly
+more complicated than the simple examples we looked at above.
+It should then be no surprise that many posteriors 
+end up being intractable analytically and must be estimating using
+numerical methods (as with our previous example).
+
+% \subsection{``Brute Force'' Approach}
+
+% The easiest way to estimate our posterior is to imagine
+% that we can estimate it using something like a
+% \textbf{Riemann sum} assuming $\params$ is 1-D. Then,
+% for a \textbf{grid} of $n$ parameter values 
+% $\{ \params_1, \dots, \params_n \}$, the expectation value
+% can be approximated by:
+% \begin{equation}
+%     \meanwrt{f(\params)}{\posterior} 
+%     = \frac{\int f(\params) \posterior(\params) \deriv \params}
+%     {\int \posterior(\params) \deriv \params}
+%     \approx \frac{\sum_{i=1}^{n} f(\params_i) 
+%     \posterior(\params_i) \Delta \params_i}
+%     {\sum_{i=1}^{n} \posterior(\params_i) \Delta \params_i}
+% \end{equation}
+% This approximation immediately suggests an associated
+% weight
+% \begin{equation}
+%     w_i = \posterior(\params_i) \Delta \params_i
+% \end{equation}
+% This result can be immediately generalized
+% to higher dimensions, in which case
+% \begin{equation}
+%     \Delta \params_i = \prod_{j=1}^{d} \Delta \Theta_i^j
+% \end{equation}
+% is instead the volume of the associated $d$-dimensional
+% cuboid with width $\Theta_i^j$ in the $j$th dimension.
+
+% While the exact value of $\posterior(\params_i)$
+% is not known beforehand due to the unknown normalizing constant
+% $\evidence$, we can easily define our weights instead to be
+% \begin{equation}
+%     w_i 
+%     = \likelihood(\params_i) \prior(\params_i) \Delta \params_i
+%     \propto \posterior(\params_i) \Delta \params_i
+% \end{equation}
+% without changing our expectation value since the additional
+% constant cancels out. We can then derive a separate estimate
+% of the evidence via
+% \begin{equation}
+%     \evidence 
+%     = \int \likelihood(\params) \prior(\params) \deriv \params
+%     \approx \sum_{i=1}^{n} \likelihood(\params_i)
+%     \prior(\params_i) \Delta \params_i = \sum_{i=1}^{n} w_i
+% \end{equation}
+
+% This procedure gives us a straightforward recipe for
+% generating $\hat{\posterior}(\params)$:
+% \begin{enumerate}
+%     \item Create a $d$-dimensional grid
+%     with $n=\prod_{j=1}^d n_j$ total points
+%     using $n_j$ points in each dimension.
+%     \item Compute the weight 
+%     $w_i = \likelihood(\params_i) \prior(\params_i) \Delta \params_i$
+%     over each point $\params_i$.
+% \end{enumerate}
+
+% While this approach is easy, it has a number of immediate drawbacks.
+% The first and most severe is that the total number of samples
+% increases \textit{exponentially} as the number of dimensions
+% increases:
+% \begin{equation}
+%     n = \prod_{j=1}^{d} n_j \sim k^d
+% \end{equation}
+% where $k \geq 2$. This means that even in the absolute
+% \textit{best} case we have $2^d$ scaling. This awful scaling
+% is often referred to as the \textbf{curse of dimensionality}.
+
+% The second drawback is that the weights can depend sensitively
+% on the spacing of the grid. If we do not specify our grid
+% well, we might end up with large variations in the derived weights
+% since we might spend, e.g., a lot of effort sampling regions where
+% $\posterior(\params)$ is small. In the ideal case then, we may
+% want to try and increase the resolution of the grid
+% in regions where the posterior is large and decrease it elsewhere.
+
+% This suggests that we might be able to come up with
+% a better estimator $\hat{\posterior}(\params)$
+% (where the weights vary less) using the same number of
+% grid points. Conversely, this also implies that we probably
+% come up with an estimate that is \textit{at least} as good
+% as the one we currently have using a possibly smaller number
+% $n_{\rm eff} \leq n$ of grid points. We refer to this
+% as the \textbf{effective sample size}.
+% Assuming the weights are (re-)normalized such that
+% \begin{equation}
+%     p_i \equiv \frac{w_i}{n^{-1} \sum_{i=1}^{n} w_i} 
+%     \quad\Rightarrow\quad \sum_{i=1}^{n} p_i = n
+% \end{equation}
+% this is often taken to be (Kish 1965):
+% \begin{equation}
+%     n_{\rm eff} 
+%     \equiv \frac{\left(\sum_{i=1}^{n} p_i\right)^2}{\sum_{i=1}^{n} p_i^2}
+% \end{equation}
+% We see that in the best case where all the weights are equal ($p_i = 1$)
+% this reduces to 
+% \begin{equation}
+%     n_{\rm eff}^{\rm best}
+%     = \frac{\left(\sum_{i=1}^{n} 1\right)^2}{\sum_{i=1}^{n} 1^2}
+%     = \frac{n^2}{n} = n
+% \end{equation}
+% while in the worst case where
+% all the weight is concentrated in a single point 
+% ($p_i = n$ for $i=j$ and $p_i=0$ otherwise) 
+% this reduces to
+% \begin{equation}
+%     n_{\rm eff}^{\rm worst}
+%     = \frac{n^2}{n^2}
+%     = 1
+% \end{equation}
+% In general, errors on estimated quantities scale as a function
+% of $n_{\rm eff}$ rather than $n$. For instance, the error on the
+% mean is typically goes as $\propto n_{\rm eff}^{-1/2}$.
+
+\section{Estimating the Posterior with Samples}
+
+\textbf{REORGANIZE.}
+
+In many modern analyses involving complicated data and models, the posterior
+$\posterior(\params)$ (and evidence $\evidence$) 
+that we are interested in estimating is often
+intractable analytically and must be estimating using numerical methods.
+A particular way of doing this is approximating the posterior density $\posterior(\params)$
+using a discrete collection of $n$ \textbf{samples} $\{ \params_1, \dots, \params_n \}$
+and associated \textbf{weights} $\{ w_1, \dots, w_n \}$. This can allow us to construct
+posterior approximations using methods such as
+\textbf{kernel density estimation} (KDE) such that
+\begin{equation}
+    \posterior(\params) 
+    \approx \hat{\posterior}(\params)
+    \equiv \frac{n^{-1} \sum_{i=1}^{n} w_i K_i(\params|\params_i)}
+    {n^{-1} \sum_{i=1}^{n} w_i}
+\end{equation}
+where $K_i(\params|\params_i)$ is the \textbf{probability density function (PDF)}
+of the \textbf{kernel} associated with sample $\params_i$.
+As an example, we can imagine that $K_i(\params|\params_i)$
+might be a multivariate Gaussian
+\begin{equation}
+    K_i(\params|\params_i) 
+    = \frac{1}{|2\pi\cov_i|^{1/2}} \exp\left[-\frac{1}{2} 
+    (\params - \meanvec_i)^T \cov^{-1} (\params - \meanvec_i) \right]
+\end{equation}
+with mean $\meanvec_i$ and covariance $\cov_i$, where $T$ is the transpose operator.
+The posterior approximation $\hat{\posterior}(\params)$ is then a
+\textbf{Gaussian mixture model} with $n$ components.
+
+
+Without loss of generality, here we will instead consider the simpler approximation:
+\begin{equation}
+    \posterior(\params) 
+    \approx \hat{\posterior}(\params)
+    \equiv \frac{n^{-1} \sum_{i=1}^{n} w_i \delta(\params|\params_i)}
+    {n^{-1} \sum_{i=1}^{n} w_i}
+\end{equation}
+where $\delta(\params|\params_i)$ is a Dirac delta function located at
+$\params_i$. This particular approximation is appealing because it allows
+to easily compute \textbf{expectation values} of other distributions of interest
+$f(\params)$ with respect to the posterior:
+\begin{equation}
+    \meanwrt{f(\params)}{\posterior} 
+    \equiv \frac{\int f(\params) \posterior(\params) \deriv \params}
+    {\int \posterior(\params) \deriv \params}
+    \approx \frac{\int f(\params) \hat{\posterior}(\params) \deriv \params}
+    {\int \hat{\posterior}(\params) \deriv \params}
+    = \frac{n^{-1} \sum_{i=1}^{n} w_i f(\params_i)}
+    {n^{-1} \sum_{i=1}^{n} w_i}
+\end{equation}
+In other words, we can compute expectation values over arbitrary functions
+by just computing the weighted average of the function evaluated over our set of
+samples $\{ \params_1, \dots, \params_n \}$ and weights $\{ w_1, \dots, w_n \}$.
+This computation is extremely easy to perform and is valid for
+any arbitrary function $f(\params)$.
+
+We will deal with the problem of how to pick our
+samples $\{ \params_1, \dots, \params_n \}$ and
+compute their weights $\{ w_1, \dots, w_n \}$ shortly.
+In general though, we can probably expect that this
+approximation should be reasonable if:
+\begin{enumerate}
+    \item Our samples have sufficient \textbf{coverage} so that
+    the region(s) of parameter space covered
+    by our samples is where the majority (e.g., 99\%) of the
+    posterior $\posterior(\params)$ is located.
+    \item Our \textbf{effective sample size} is reasonably
+    large. This means that either our weights $\{ w_1, \dots, w_n \}$
+    don't vary too dramatically or we have a lot
+    of samples to make up for it in case they do.
+\end{enumerate}
+
+\subsection{``Brute Force'' Approach}
+
+The easiest way to estimate our posterior is to imagine
+that we can estimate it using something like a
+\textbf{Riemann sum} assuming $\params$ is 1-D. Then,
+for a \textbf{grid} of $n$ parameter values 
+$\{ \params_1, \dots, \params_n \}$, the expectation value
+can be approximated by:
+\begin{equation}
+    \meanwrt{f(\params)}{\posterior} 
+    = \frac{\int f(\params) \posterior(\params) \deriv \params}
+    {\int \posterior(\params) \deriv \params}
+    \approx \frac{\sum_{i=1}^{n} f(\params_i) 
+    \posterior(\params_i) \Delta \params_i}
+    {\sum_{i=1}^{n} \posterior(\params_i) \Delta \params_i}
+\end{equation}
+This approximation immediately suggests an associated
+weight
+\begin{equation}
+    w_i = \posterior(\params_i) \Delta \params_i
+\end{equation}
+This result can be immediately generalized
+to higher dimensions, in which case
+\begin{equation}
+    \Delta \params_i = \prod_{j=1}^{d} \Delta \Theta_i^j
+\end{equation}
+is instead the volume of the associated $d$-dimensional
+cuboid with width $\Theta_i^j$ in the $j$th dimension.
+
+While the exact value of $\posterior(\params_i)$
+is not known beforehand due to the unknown normalizing constant
+$\evidence$, we can easily define our weights instead to be
+\begin{equation}
+    w_i 
+    = \likelihood(\params_i) \prior(\params_i) \Delta \params_i
+    \propto \posterior(\params_i) \Delta \params_i
+\end{equation}
+without changing our expectation value since the additional
+constant cancels out. We can then derive a separate estimate
+of the evidence via
+\begin{equation}
+    \evidence 
+    = \int \likelihood(\params) \prior(\params) \deriv \params
+    \approx \sum_{i=1}^{n} \likelihood(\params_i)
+    \prior(\params_i) \Delta \params_i = \sum_{i=1}^{n} w_i
+\end{equation}
+
+This procedure gives us a straightforward recipe for
+generating $\hat{\posterior}(\params)$:
+\begin{enumerate}
+    \item Create a $d$-dimensional grid
+    with $n=\prod_{j=1}^d n_j$ total points
+    using $n_j$ points in each dimension.
+    \item Compute the weight 
+    $w_i = \likelihood(\params_i) \prior(\params_i) \Delta \params_i$
+    over each point $\params_i$.
+\end{enumerate}
+
+While this approach is easy, it has a number of immediate drawbacks.
+The first and most severe is that the total number of samples
+increases \textit{exponentially} as the number of dimensions
+increases:
+\begin{equation}
+    n = \prod_{j=1}^{d} n_j \sim k^d
+\end{equation}
+where $k \geq 2$. This means that even in the absolute
+\textit{best} case we have $2^d$ scaling. This awful scaling
+is often referred to as the \textbf{curse of dimensionality}.
+
+The second drawback is that the weights can depend sensitively
+on the spacing of the grid. If we do not specify our grid
+well, we might end up with large variations in the derived weights
+since we might spend, e.g., a lot of effort sampling regions where
+$\posterior(\params)$ is small. In the ideal case then, we may
+want to try and increase the resolution of the grid
+in regions where the posterior is large and decrease it elsewhere.
+
+This suggests that we might be able to come up with
+a better estimator $\hat{\posterior}(\params)$
+(where the weights vary less) using the same number of
+grid points. Conversely, this also implies that we probably
+come up with an estimate that is \textit{at least} as good
+as the one we currently have using a possibly smaller number
+$n_{\rm eff} \leq n$ of grid points. We refer to this
+as the \textbf{effective sample size}.
+Assuming the weights are (re-)normalized such that
+\begin{equation}
+    p_i \equiv \frac{w_i}{n^{-1} \sum_{i=1}^{n} w_i} 
+    \quad\Rightarrow\quad \sum_{i=1}^{n} p_i = n
+\end{equation}
+this is often taken to be (Kish 1965):
+\begin{equation}
+    n_{\rm eff} 
+    \equiv \frac{\left(\sum_{i=1}^{n} p_i\right)^2}{\sum_{i=1}^{n} p_i^2}
+\end{equation}
+We see that in the best case where all the weights are equal ($p_i = 1$)
+this reduces to 
+\begin{equation}
+    n_{\rm eff}^{\rm best}
+    = \frac{\left(\sum_{i=1}^{n} 1\right)^2}{\sum_{i=1}^{n} 1^2}
+    = \frac{n^2}{n} = n
+\end{equation}
+while in the worst case where
+all the weight is concentrated in a single point 
+($p_i = n$ for $i=j$ and $p_i=0$ otherwise) 
+this reduces to
+\begin{equation}
+    n_{\rm eff}^{\rm worst}
+    = \frac{n^2}{n^2}
+    = 1
+\end{equation}
+In general, errors on estimated quantities scale as a function
+of $n_{\rm eff}$ rather than $n$. For instance, the error on the
+mean is typically goes as $\propto n_{\rm eff}^{-1/2}$.
+
+\subsection{Importance Sampling}
+
+Above, we outlined how we can relate a grid of $n$ points to their
+associated weights $w_i$ when computing $\hat{\posterior}(\params)$,
+how we might change the resolution of the grid to adjust those weights,
+and how the distribution of those weights is related to the effective
+sample size. Now we want to take this basic idea one step further.
+
+In general, the weight $w_i$ associated with each sample $\params_i$ is
+intimately related to the process by which we generated the
+entire set of samples. In the case where these are regularly spaced,
+$w_i$ is proportional to the value of the posterior at a given position
+$\posterior(\params_i)$ as well as the spacing of the grid $\Delta \params_i$.
+Decreasing the spacing (making grid denser) decreases the weight since we
+now have more points located in that region. This makes sense:
+if we roughly double the number of points, each of them should probably
+get around half the weight (assuming $\posterior(\params)$ doesn't change
+too much).
+
+We can extend this basic relationship between the \textit{density} of points
+and their overall weights beyond just changing the resolution of our grid.
+Taking this to its conceptual limit, we could imagine estimating
+the posterior using an infinite amount of grid points whose spacing/density
+changes as a function of $\params$. Let's define the density
+as a function of position to be $\proposal(\params)$. 
+Using $\proposal(\params)$, we can rewrite our original expectation value
+as
+\begin{equation}
+    \meanwrt{f(\params)}{\posterior} 
+    \equiv \frac{\int f(\params) \posterior(\params) \deriv \params}
+    {\int \posterior(\params) \deriv \params}
+    = \frac{\int f(\params) \frac{\posterior(\params)}{\proposal(\params)}
+    \proposal(\params) \deriv \params}
+    {\int \frac{\posterior(\params)}{\proposal(\params)}
+    \proposal(\params) \deriv \params}
+\end{equation}
+
+This may mostly seem like a mathematical trick, but rewriting the result
+this way allows us to use the approximation 
+\begin{equation}
+    \proposal(\params) 
+    \approx \hat{\proposal}(\params)
+    \equiv \frac{n^{-1} \sum_{i=1}^{n} q_i \delta(\params|\params_i)}
+    {n^{-1} \sum_{i=1}^{n} q_i}
+\end{equation}
+rather than $\hat{\posterior}(\params)$ when trying to compute our results.
+Plugging this into our initial expression gives
+\begin{equation}
+    \meanwrt{f(\params)}{\posterior} 
+    \approx \frac{\int f(\params) \frac{\posterior(\params)}{\proposal(\params)}
+    \hat{\proposal(\params)} \deriv \params}
+    {\int \frac{\posterior(\params)}{\proposal(\params)}
+    \hat{\proposal(\params)} \deriv \params}
+    = \frac{n^{-1} \sum_{i=1}^{n} f(\params_i)
+    \frac{\posterior(\params_i)}{\proposal(\params_i)} q_i}
+    {n^{-1} \sum_{i=1}^{n} \frac{\posterior(\params_i)}{\proposal(\params_i)} q_i}
+\end{equation}
+
+There are two primary benefits from moving from an adaptively-spaced grid
+to a continuous distribution $\proposal(\params)$. First, a grid will
+always have some minimum resolution $\Delta \params_i$ that makes it difficult
+to get our weights to be \textit{exactly} uniform, limiting our maximum
+effective sample size. By contrast, we can in theory get
+$\proposal(\params)$ to exactly match the posterior $\posterior(\params)$,
+allowing us to achieve larger effective sample sizes.
+
+Second, we can often \textit{choose} $\proposal(\params)$ to be
+straightforward to simulate from, such as a Gaussian distribution.
+In that case, we can easily generate a series of $n$
+\textbf{independently and identically distributed (iid)} samples
+\begin{equation}
+    \params_1, \dots, \params_n \stackrel{\iid}{\sim} \proposal(\params)
+\end{equation}
+These can then be used to generate an optimal estimate of
+$\hat{\proposal}(\params)$ with identical weights $q_i = 1$.
+Since these samples are generated \textit{randomly}, this is
+referred to as a \textbf{Monte Carlo} approach for estimating
+$\hat{\proposal}(\params)$ and downstream quantities.
+
+In the case where our $n$ samples 
+$\{ \params_1, \dots, \params_n \} \stackrel{\iid}{\sim} \proposal(\params)$
+are indeed sampled directly from $\proposal(\params)$, our estimate
+for the expectation value then reduces to
+\begin{equation}
+    \meanwrt{f(\params)}{\posterior} 
+    \approx \frac{n^{-1} \sum_{i=1}^{n} f(\params_i)
+    \frac{\posterior(\params_i)}{\proposal(\params_i)}}
+    {n^{-1} \sum_{i=1}^{n} \frac{\posterior(\params_i)}{\proposal(\params_i)}}
+\end{equation}
+The corresponding weight is then
+\begin{equation}
+    w_i 
+    \equiv \frac{\likelihood(\params_i) \prior(\params_i)}{\proposal(\params_i)}
+\end{equation}
+where we have again used $\likelihood(\params) \prior(\params)$ in place
+of the posterior $\posterior(\params)$ since it is not known. As with the
+previous case, these weights can be used to derive the evidence
+\begin{align}
+    \evidence 
+    = \int \likelihood(\params) \prior(\params) \deriv \params
+    \approx n^{-1} \sum_{i=1}^{n} \frac{\likelihood(\params_i) 
+    \prior(\params_i)}{\proposal(\params_i)} = n^{-1} \sum_{i=1}^{n} w_i
+\end{align}
+
+We can interpret these weights as ways to correct for how
+``far off'' our original
+guess $\proposal(\params)$ is from the truth $\posterior(\params)$.
+If the posterior density is higher at position
+$\params_i$ relative to the proposal density, 
+then we were less likely to generate
+a sample at that position relative to if had simulated it directly from
+the posterior and we should increase its corresponding weight.
+If the posterior density is lower relative to the proposal density, 
+then the alternative is true and we want to lower the weight of the
+corresponding sample.
+
+Taken together, this approach is broadly known as 
+\textbf{importance sampling}, which allows us to
+approximate $\hat{\posterior}(\params)$ using the following steps:
+\begin{enumerate}
+    \item Select a \textbf{proposal distribution} $\proposal(\params)$
+    that is easy to simulate from and hopefully a good approximation of
+    $\posterior(\params)$.
+    \item Generate $n$ iid samples $\{ \params_1, \dots, \params_n \}$
+    from $\proposal(\params)$.
+    \item Compute the corresponding \textbf{importance weight}
+    $w_i = \likelihood(\params_i) \prior(\params_i) / \proposal(\params_i)$
+    for each sample.
+\end{enumerate}
+
+Importance sampling serves as a useful first step for understanding how
+the weights are related to different Monte Carlo sampling strategies.
+For instance, if we generate samples uniformly within some $d$-dimensional 
+volume such that $\proposal(\params) = 1/V$ is constant, our weights will just be
+proportional to the posterior:
+\begin{equation}
+    w_i^{\rm unif} 
+    = V \likelihood(\params_i) \prior(\params_i) 
+    \propto \posterior(\params_i)
+\end{equation}
+Alternately, if we instead take our proposal
+$\proposal(\params) = \prior(\params)$ to be our prior,
+we instead find our weights will be equal to the likelihood $\likelihood(\params)$:
+\begin{equation}
+    w_i^{\rm prior} 
+    = \frac{\likelihood(\params_i) \prior(\params_i)}{\prior(\params_i)}
+    = \likelihood(\params_i)
+\end{equation}
+Finally, if we assume $\proposal(\params) = \posterior(\params)$
+is an exact approximation of the posterior, our weights will just be
+constant:
+\begin{equation}
+    w_i^{\rm post} 
+    = \frac{\likelihood(\params_i) \prior(\params_i)}{\posterior(\params_i)}
+    = \evidence \frac{\posterior(\params_i)}{\posterior(\params_i)}
+    = \evidence
+\end{equation}
+As expected, this final result guarantees a maximum
+effective sample size of $n_{\rm eff} = n$.
+
+\subsection{Relationship to Markov Chain Monte Carlo}
+
+Now that we see how the weights relate to various Monte Carlo sampling strategies
+(e.g., generating samples from the prior), we now are in a place to outline
+the idea behind \textbf{Markov Chain Monte Carlo (MCMC)}. In brief,
+MCMC tries generate samples in such a way that the weights
+$w_1 = \dots = w_n = C$ are constant. Based on the example above, this
+means MCMC seeks to generate samples proportional to
+the posterior $\posterior(\params)$.
+It accomplishes this by creating a \textbf{chain} of 
+(correlated) parameter values $\{ \params_1 \rightarrow \dots \rightarrow \params_n \}$
+over $n$ iterations such that the total amount of iterations spent in any particular
+region $\delta_{\params_i}$ centered on $\params_i$ with some small volume
+is proportional to the posterior density $\posterior(\params)$ contained within that region.
+
+In other words, the ``density'' of samples generated from MCMC
+\begin{equation}
+    \rho(\params) \equiv \frac{n(\params)}{n}
+\end{equation}
+at position $\params$ integrated over $\delta_{\params_i}$ is approximately
+\begin{equation}
+    \int_{\delta_{\params_i}} \posterior(\params) \deriv \params
+    \approx \int_{\delta_{\params_i}} \rho(\params) \deriv \params 
+    \approx n^{-1} \sum_{j=1}^{n} \mathds{1}(\params_j \in \delta_{\params_i})
+\end{equation}
+where $\mathds{1}(\cdot)$ is the \textbf{indicator function} which is
+just $1$ if the inside condition is true and $0$ otherwise. So
+we just count up the number of samples within $\delta_{\params_i}$
+and normalize by the total number of samples.
+
+While this will just be approximately true for any finite $n$, as
+as the number of samples $n \rightarrow \infty$ we get that
+$\rho(\params) \rightarrow \posterior(\params)$ everywhere.
+In theory then, once we have a reasonable enough
+approximation for $\rho(\params)$, we can also get an estimate
+for the evidence via:
+\begin{align}
+    \evidence
+    = \int \frac{\likelihood(\params) \prior(\params)}{\posterior(\params)}
+    \posterior(\params) \deriv \params
+    \approx \int \frac{\likelihood(\params) \prior(\params)}{\rho(\params)}
+    \rho(\params) \deriv \params
+    = n^{-1} \sum_{i=1}^{n} 
+    \frac{\likelihood(\params_i) \prior(\params_i)}{\rho(\params_i)}
+\end{align}
+This is just the average of the ratio 
+between $\likelihood(\params) \prior(\params)$ and $\rho(\params)$
+over all $n$ samples.
+
+While this procedure gives ``ideal'' weights by simulating ``directly''
+from the posterior, it is not without its drawbacks.
+In particular, because the samples are correlated, the effective sample
+size
+\begin{equation}
+    n_{\rm eff} \equiv \frac{n}{1 + \tau}
+\end{equation}
+where $\tau$ is the integrated \textbf{autocorrelation time}
+between samples. If $\tau=0$ (i.e. $\params_i$ and $\params_{i+1}$ are
+uncorrelated), then every sample is independent
+and $n_{\rm eff} = n$. Conversely, if $\tau = n - 1$
+(i.e. $\params_1 = \dots = \params{n}$) then every sample is
+100\% correlated and $n_{\rm eff} = 1$. A driving concern
+of MCMC methods is generating samples in such a way that
+$\tau$ is small and $n_{\rm eff}$ is as close to $n$ as possible.
+
+To summarize, the idea behind MCMC is to simulate a series of
+values in a way that their density after a given amount
+of time follows the underlying posterior. Then, 
+we can estimate the posterior at any particular location by simply
+counting up how many samples we simulate there and normalizing by
+the total number of samples we generated. This procedure is incredibly
+intuitive and part of the reason MCMC methods have 
+become so widely adopted. We will return to ways to generate these
+samples later.
+
+\subsection{``Approximating the Posterior'' with Samples}
+
+\textbf{START HERE. 
+Why are we doing MCMC? 
+Because in general we can get better approximations than the grid.
+And therefore need fewer samples overall. More efficient.
+But this doesn't mean we actually are able to 
+``approximate the posterior''; if we could do that, we'd be able to
+compute the evidence. We can show via some very simple scaling arguments
+with $\rho(\params)$ that this still has the curse of dimensionality.}
+
+So far we've been talking about ``approximating the posterior'' using
+samples obtained from Monte Carlo methods. But what exactly does that mean?
+While it's clear that as $n \rightarrow \infty$ that
+$\hat{\posterior}(\params) \rightarrow \posterior(\params)$, how many
+samples do we need to really be in that limit?
+
+To get a rough idea, let's start with the assumption
+that we need a minimum of
+two samples to characterize the posterior in each dimension
+(one sample just gives us a single point).
+As an example, let's imagine that we hope to approximate
+the posterior by expanding around the \textit{maximum-a-posteriori}
+estimate $\params_{\rm MAP}$ (i.e. where the posterior $\posterior(\params)$
+is maximized) by assigning a sample to the left and right of $\params_{\rm MAP}$
+in each dimension. This minimal procedure requires $2^d$ samples:
+2 in 1-D for each side, 4 in 2-D for each
+quadrant, 8 in 3-D for each orthant, etc.
+This quickly leads to an insane number of samples 
+required as the dimensionality becomes large. For instance,
+allocating a sample to each \textbf{orthant} in 30
+dimensions requires $2^{30} \sim 10^{9}$ samples.
+
+While the above argument is straightforward, there are 
+some possible objections. Most immediately, we can
+provide a direct ``counterexample'' to the argument above using
+$d$-dimensional Gaussian distribution $\Normal{\meanvec}{\cov}$
+with mean $\meanvec$ and covariance $\cov$. It is well known
+that we only need on order $d$ samples to estimate the mean and $d^2$
+to estimate the covariance. Characterizing the
+distribution with Monte Carlo methods (e.g., MCMC) then only
+should require $n \sim d^2 \ll 2^d$ samples.
+
+Unfortunately, this reasoning ignores a huge caveat:
+\textit{the assumption that the posterior is Gaussian}.
+In general, however, how are you supposed to know
+this without checking how the distribution behaves everywhere?
+Showing that this assumption is valid then
+requires exploring the entire distribution in every dimension
+to make sure things don't deviate from what you'd expect.
+And since the number of orthants goes as $2^d$, this
+means we need a minimum of $2^d$ samples.
+
+We can formally summarize this as:
+\begin{equation}
+    \hat{\posterior}(\params) \approx \posterior(\params)
+    \quad\quad {\rm for} \quad n \gtrsim k^d
+\end{equation}
+In other words, the number of samples required
+to effectively ``approximate'' the posterior increases 
+exponentially with dimensionality $d$, where the scaling
+$k\geq 2$ depends on the precision of the approximation needed.
+
+This seems disappointing: why use Monte Carlo methods
+at all if its ability to approximate the posterior
+scales so poorly with dimensionality? Well, that's because
+\textit{most of the time we don't actually care about
+approximating the entire posterior}. Instead, we are
+often interested in the expectation of functions
+$f(\params)$ conditioned on the data, which only requires
+\textit{integrating} over the posterior:
+\begin{equation}
+    \meanwrt{f(\params)}{\posterior} 
+    = \int f(\params) \posterior(\params) \deriv \params
+\end{equation}
+
+Fortunately, computing these approximations to reasonably
+high precision often doesn't require that we have approximated the
+posterior to high precision everywhere, but rather only in the
+places that really matter. This enables us to use
+methods such as MCMC to approximate these expectations as
+\begin{equation}
+    \meanwrt{f(\params)}{\posterior} 
+    \approx \int f(\params) \rho(\params) \deriv \params
+    \approx n^{-1} \sum_{i=1}^{n} f(\params_i)
+\end{equation}
+using the chain of MCMC parameter states
+$\{ \params_1 \rightarrow \dots \rightarrow \params_n \}$.
+This logic also applies to lower-dimensional (e.g., 1-D or 2-D)
+marginal distributions, which marginalize over the sparse
+sampling in all other dimensions to generate an accurate
+lower-dimensional representation of the posterior.
+
+\section{Where is the posterior?}
+
+Fundamentally, computing any expectation
+over the posterior $\meanwrt{f(\params)}{\posterior}$ requires
+integrating over the entire domain
+of our parameters $\params$. Understanding how the volume
+of this domain behaves (i.e. how many parameter combinations
+there are) is therefore key to understanding
+why Monte Carlo approximations scale so poorly as a function
+of dimensionality.
+
+\subsection{Volume}
+
+To start, let's consider the
+\textbf{$d$-cube} with side length $\ell$ in all dimensions.
+It's volume scales as
+\begin{equation}
+    V(\ell) = \prod_{i=1}^{d} \ell = \ell^d
+\end{equation}
+The differential volume element between $\ell$ and
+$\ell + \deriv \ell$ is
+\begin{equation}
+    \deriv V(\ell) = d\ell^{d-1}\deriv\ell \propto \ell^{d-1}\deriv\ell
+\end{equation}
+
+This exponential scaling with dimensionality means that volume becomes
+increasingly concentrated in thin shells located in regions located
+progressively further away from the center of the $d$-cube.
+As an example, consider the length-scale
+\begin{equation}
+    \ell_{50}/\ell = 2^{-1/d}
+\end{equation}
+that divides the cube into two equal-sized regions
+with 50\% of the volume contained interior to $\ell_{50}$ and
+50\% of the volume exterior to $\ell_{50}$. 
+In 1-D, this gives $\ell_{50}/\ell = 0.5$ as we'd
+expect. In 2-D, this gives $\ell_{50}/\ell \approx 0.7$. In 3-D,
+$\ell_{50}/\ell \approx 0.8$. In 7-D, $\ell_{50}/\ell \approx 0.9$.
+By the time we get to 15-D, we have $\ell_{50} /\ell\approx 0.95$
+so that 50\% of the volume is located in the last 5\% of the 
+length-scale near the boundary of the unit cube prior.
+
+While the constants change, in general this argument holds for
+any shape in high dimensions.
+% Another useful example to
+% consider is the \textbf{$d$-sphere}, which has a volume of
+% \begin{equation}
+%     V(r) = \frac{\pi^{d/2}}{\Gamma(d/2 + 1)} r^d \propto r^d
+% \end{equation}
+% and a differential volume element of
+% \begin{equation}
+%     \deriv V(r) = \frac{d\pi^{d/2}}{\Gamma(d/2 + 1)} r^{d-1} \deriv r 
+%     \propto r^{d-1} \deriv r
+% \end{equation}
+% Since the $d$-sphere follows the same scaling as the $d$-cube, 
+% it also exhibits the same behavior as the case described above with
+% progressively more volume located in regions away from the center
+% as the dimensionality increases.
+
+\subsection{Mass}
+
+We now turn our attention to the posterior $\posterior(\params)$.
+Since we are almost always interested in computing
+expectations over the posterior, we want to know
+where the integrand $\posterior(\params) \deriv \params$ in
+\begin{equation}
+    1 = \int \posterior(\params) \deriv \params
+\end{equation}
+is maximized. Since $\posterior(\params)$ is the
+posterior density and $\deriv \params$ is a differential
+volume element, we can interpret this combined
+$\posterior(\params) \deriv \params$ term as the
+\textbf{posterior mass}. We want to find out where
+this mass is generally located.
+
+To make the integrand a little easier to conceptualize,
+let's imagine that $\params = (x, y, z)$ 
+and $\posterior(x,y,z)$ is
+spherically symmetric. While we could imagine trying to
+integrate over $\posterior(x,y,z)$ directly in terms of
+$\deriv x \deriv y \deriv z$, it is almost always
+easier to instead integrate over such a distribution
+in ``shells'' with differential volume
+$\deriv V(r) = 4 \pi r^2 \deriv r$
+as a function of radius
+$r = \sqrt{x^2 + y^2 + z^2}$. This allows us
+to rewrite the integral as
+\begin{equation}
+    \int \posterior(x,y,z) \deriv x \deriv y \deriv z
+    = \int \posterior(r) 4 \pi r^2 \deriv r
+    = \int \tilde{\posterior}(r) \deriv r
+\end{equation}
+where $\tilde{\posterior}(r) = 4 \pi r^2 \posterior(r)$
+is the posterior mass.
+This result implies that the posterior mass isn't
+just the region where the posterior takes on the
+largest \textit{value}, but instead
+is defined by the region that contains 
+the largest \textit{amount} of the overall posterior.
+More colloquially, this just means that a 
+small handful of excellent fits to the data can
+be easily overwhelmed by a substantially larger number
+of mediocre fits.
+
+Although not all posterior densities can be expected to
+be spherically-symmetric, in general we can
+rewrite the integral over $\params$ as a volume integral
+over $V$ defined by some unknown iso-posterior 
+contours\footnote{Indeed, some Monte Carlo methods such as 
+Nested Sampling actually are designed to 
+evaluate this type of volume integral explicitly.}
+\begin{equation}
+    \int \posterior(\params) \deriv \params
+    = \int \posterior(V) \deriv V
+\end{equation}
+where again the size of each volume element
+$\deriv V \sim r^{d-1} \deriv r$ roughly scales
+exponentially with the number of dimensions. So the basic
+intuition we get from the simple spherically-symmetric case
+still applies.
+
+In terms of the Monte Carlo methods where we want to
+approximate the posterior using random samples, this
+means that while the highest \textit{concentration}
+of samples will be located in the regions of highest
+posterior density, the largest \textit{amount} of samples
+will actually be located in the regions of highest posterior
+mass. Since this implies that a ``typical'' sample 
+(picked at random) will most likely be located in this
+region of high posterior mass,
+this region is also commonly referred to
+as the \textbf{typical set}.
+
+\subsection{Gaussian Case}
+
+As a concrete example, let's consider
+the case where the posterior $\posterior(\params)$
+is a $d$-D Gaussian distribution
+with mean $\meanvec = 0$ and covariance $\cov = \sigma^2\mathbf{I}$,
+where $\mathbf{I}$ is the identity matrix.
+The posterior mass is then
+\begin{align}
+    \posterior(V) \deriv V(r)
+    = \tilde{\posterior}(r) \deriv r
+    &= \frac{2}{(2\sigma^2)^{d/2} \Gamma(d/2)}
+    e^{-r^2/2\sigma^2} r^{d-1} \deriv r \\
+    &\propto e^{-r^2/2\sigma^2} r^{d-1} \deriv r \nonumber
+\end{align}
+where $r = |\params|$ is the magnitude of the 
+position.\footnote{Note that this is closely related
+to the chi-square distribution.}
+
+The \textbf{typical radius} $r_{\rm peak}$ 
+where the posterior mass peaks
+and a sample is most likely to be located
+can be derived by setting the derivative of the above term to $0$.
+Solving then gives
+\begin{equation}
+    r_{\rm peak} = \sqrt{d-1} \sigma
+\end{equation}
+In other words, while in 1-D a typical sample
+is most likely to be located at the peak of the 
+distribution with $r_{\rm peak} = 0$, in higher dimensions
+this changes quite drastically. While $r_{\rm peak} = 1\sigma$
+in 2-D, it is $2\sigma$ in 5-D, $3\sigma$ in 10-D, and $5\sigma$
+in 26-D. This is a direct consequence of the
+huge amount of volume at larger radii in high dimensions:
+although a sample at $r=5\sigma$ away from the \textit{maximum-a-posteriori}
+position at $r=0$ is a not a great model, the number of
+parameter combinations available at $r=5\sigma$ is enormous.
+
+In general, we expect the posterior mass to comprise
+a \textbf{Gaussian shell} centered at some radius
+\begin{equation}
+    r_{\rm mean}
+    = \int_0^\infty r \tilde{\posterior}(r) \deriv r
+    = \sqrt{2} \frac{\Gamma\left(\frac{d+1}{2}\right)}
+    {\Gamma\left(\frac{d}{2}\right)} \sigma
+    \approx \sqrt{d} \sigma
+\end{equation}
+with a standard deviation of
+\begin{equation}
+    \Delta r_{\rm mean}
+    = \sqrt{\int_0^\infty r^2 \tilde{\posterior}(r) \deriv r 
+    - r_{\rm mean}^2}
+    = \sigma \sqrt{d - 2 
+    \left(\frac{\Gamma\left(\frac{d+1}{2}\right)}
+    {\Gamma\left(\frac{d}{2}\right)}\right)^2}
+    \approx \frac{\sigma}{\sqrt{2}}
+\end{equation}
+where the approximations are taken for large $d$.
+This result illustrates that
+\textit{the majority of the posterior mass $\tilde{\posterior}(r)$ 
+is located progressively further away from the peak
+posterior density $\posterior(r=0)$ as the dimensionality
+increases.} This has immediate implications for 
+how MCMC methods will behave.
+
+\section{Markov Chain Monte Carlo}
+
+Recall that the goal of MCMC is to generate samples
+such that their density $\rho(\params)$ after
+some amount of time follows the posterior
+density $\rho(\params)$. However, as we just described,
+the bulk of the posterior mass $\tilde{\posterior}(r)$
+is actually concentrated in a thin shell
+surrounding the \textit{maximum-a-posteriori} position
+$\params_{\rm MAP}$. 
+\textbf{The goal of MCMC is thus very clear:
+efficiently generate samples from the bulk of
+the posterior mass}.
+
+Unfortunately, we don't actually
+know where the posterior mass is located beforehand (if we did,
+we wouldn't need to use Monte Carlo methods like MCMC to approximate
+it). This means we will need to develop efficient algorithms
+that enable our MCMC to generate a chain of states
+that can ``explore'' the posterior mass over time.
