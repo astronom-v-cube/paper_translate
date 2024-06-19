@@ -820,140 +820,74 @@ $L_{\posterior}(\hat{\params})$ при \textbf{абсолютных потеря
 
 Как и ожидалось, этот результат гарантирует максимально возможную ESS, равную $n_{\rm eff} = n$. Таким образом, получение $\proposal(\params)$ как можно ближе к $\posterior(\params)$ становится важной частью анализа при попытке использовать Importance Sampling для оценки значений ожиданий. Именно этот результат, в частности, мотивирует использование методов Марковской цепи Монте-Карло (MCMC), обсуждаемых с \S\ref{sec:mcmc} и далее: если мы можем каким-то образом генерировать выборки \textit{прямо} из $\posterior(\params)$ или что-то близкое к нему, то мы можем достичь оптимальной оценки соответствующих значений ожиданий.
 
-\subsection*{Exercise: Importance Sampling over a 2-D Gaussian} 
+\subsection*{Упражнение: Выборка по важности для двумерного гаусса} 
 \label{exercise:importance}
 
 \subsubsection*{Setup}
 
-Let's return to our exercise from \S\ref{sec:grid}, in which
-our unnormalized posterior is well-approximated by a 2-D Gaussian (Normal)
-distribution:
+Вернемся к упражнению из \S\ref{sec:grid}, в котором наше ненормированное последействие хорошо аппроксимируется двумерным гауссовым (нормальным) распределением:
 \begin{equation*}
     \tilde{\posterior}(x,y) 
     = \exp\left\{-\frac{1}{2}\left[\frac{(x-\mu_x)^2}{\sigma_x^2}
     + \frac{(y-\mu_y)^2}{\sigma_y^2}\right]\right\}
 \end{equation*}
-where $(\mu_x,\mu_y)=(-0.3,0.8)$ and $(\sigma_x^2,\sigma_y^2)=(2,0.5)$.
+где $(\mu_x,\mu_y)=(-0.3,0.8)$ и $(\sigma_x^2,\sigma_y^2)=(2,0.5)$.
 
-\subsubsection*{Importance Sampling}
+\subsubsection*{Выборка по значимости}
 
-We want to use Importance Sampling to approximate various posterior
-integrals from this distribution.
-We will start by choosing our proposal distribution $\proposal(x,y)$
-to be a 2-D Gaussian with a mean of $0$ and standard deviation of $1$:
+Мы хотим использовать Importance Sampling для аппроксимации различных апостериорных интегралов от этого распределения. Начнем с того, что выберем распределение предложений $\proposal(x,y)$ как двумерное гауссовское со средним значением $0$ и стандартным отклонением $1$:
 \begin{equation*}
     \proposal(x,y) = \Normal{(\mu_x,\mu_y)=(0,0)}{(\sigma_x,\sigma_y)=(1,1)}
 \end{equation*}
 
-Using $n=25$ iid random samples drawn 
-from the proposal distribution, compute an estimate for:
+Используя $n=25$ iid случайных выборок, взятых из распределения предложения, вычислите оценку для:
 \begin{enumerate}
-    \item the evidence $\evidence$,
-    \item the means $\meanwrt{x}{\posterior}$
-    and $\meanwrt{y}{\posterior}$,
-    \item the 68\% credible intervals (or closest approximation) 
-    $[x_{\rm low}, x_{\rm high}]$ and $[y_{\rm low}, y_{\rm high}]$,
-    \item and the effective sample size $n_{\rm eff}$.
+	\item доказательств $\evidence$,
+	\item средних $\meanwrt{x}{\posterior}$
+	и $\meanwrt{y}{\posterior}$,
+	\item 68\% доверительные интервалы (или ближайшее приближение) 
+	$[x_{\rm low}, x_{\rm high}]$ и $[y_{\rm low}, y_{\rm high}]$,
+	\ элемент и эффективный размер выборки $n_{\rm eff}$.
 \end{enumerate}
-How accurate are each of these quantities with the values we might
-expect? What does $n_{\rm eff}/n$ tell us about how well
-our proposal $\proposal(x,y)$ traces the underlying posterior
-$\posterior(x,y)$?
+Насколько точно каждая из этих величин соответствует ожидаемым значениям? Что говорит нам $n_{\rm eff}/n$ о том, насколько хорошо наше предложение $\proposal(x,y)$ отслеживает базовое апостериорное значение $\posterior(x,y)$?
 
-\subsubsection*{Uncertainty}
+\subsubsection*{Неопределенность}
 
-Repeat the above exercise $m=100$ times to get an
-estimate for how much our estimates of each quantity can vary.
-Is the variation in line with what might be expected given 
-the typical effective sample size? Why or why not?
+Повторите это упражнение $m=100$ раз, чтобы получить оценку того, насколько сильно могут варьироваться наши оценки каждого количества. Соответствует ли эта вариация тому, что можно было бы ожидать, учитывая  типичного эффективного размера выборки? Почему или почему нет?
 
-\subsubsection*{Convergence}
+\subsubsection*{Сближение}
 
-Now repeat the above exercise using $n=100$, $n=1000$, and $n=10000$ 
-points rather than $n=25$ points and comment on any differences.
-How much has the overall accuracy improved? Do
-the estimates appear convergent and consistent as $n_{\rm eff}$ increases?
-How much do the errors on quantities shrink as a function
-of $n$ and/or $n_{\rm eff}$? Is this behavior expected? Why or why not?
+Теперь повторите упражнение, используя точки $n=100$, $n=1000$ и $n=10000$, а не $n=25$, и прокомментируйте различия. Насколько повысилась общая точность? Сходятся ли и согласуются ли оценки при увеличении $n_{\rm eff}$? Насколько уменьшаются ошибки в оценках величин в зависимости от $n$ и/или $n_{\rm eff}$? Ожидаемо ли такое поведение? Почему или почему нет?
 
-\subsubsection*{Consistency}
+\subsubsection*{Последовательность}
 
-Next, let's expand our proposal distribution to instead have
-$(\sigma_x,\sigma_y)=(2,2)$ to get more coverage in the ``tails'' of the
-posterior. Perform the same exercise as above 
-with $n=\{100,1000,10000\}$ iid random samples. 
-Do the answers change substantially? Why or why not?
+Далее расширим наше распределение предложений, чтобы вместо $(\sigma_x,\sigma_y)=(2,2)$ получить большее покрытие в ``хвостах`` апостериора. Выполните то же упражнение, что и выше, с $n=\{100,1000,10000\}$ иидными случайными выборками. Существенно ли изменились ответы? Почему или почему нет?
 
-While in theory we can choose $\proposal(x,y) \approx \posterior(x,y)$ 
-so that $n_{\rm eff} \approx n$, we do not know the exact shape of the posterior 
-ahead of time. Given that $\tilde{\posterior}(x,y)$ may differ from
-our initial expectations, what does this exercise imply about general concerns
-applying Importance Sampling in practice?
+Хотя теоретически мы можем выбрать $\proposal(x,y)\approx \posterior(x,y)$ так, чтобы $n_{\rm eff} \approx n$, мы не знаем точной формы апостериора заранее. Учитывая, что $\tilde{\posterior}(x,y)$ может отличаться от наших первоначальных ожиданий, что это упражнение говорит об общих проблемах применения Importance Sampling на практике?
 
-\section{Markov Chain Monte Carlo} \label{sec:mcmc}
+\section{Марковская цепь Монте-Карло} \label{sec:mcmc}
 
-Now that we see how the weights relate to various Monte Carlo sampling strategies
-(e.g., generating samples from the prior), I will now outline
-the idea behind \textbf{Markov Chain Monte Carlo (MCMC)}. In brief,
-MCMC methods try to generate samples in such a way that the importance
-weights $\{ \tilde{w}_1, \dots, \tilde{w}_n \}$ associated with each sample
-are constant. Based on the results from \S\ref{subsection:samp_strat}, this
-means MCMC seeks to generate samples proportional to
-the posterior $\posterior(\params)$ in order to arrive 
-at an \textit{optimal estimate} for our expectation value.
+Теперь, когда мы видим, как веса связаны с различными стратегиями выборки Монте-Карло (например, генерацией выборок из предшествующих), я расскажу об идее \textbf{Марковской цепи Монте-Карло (MCMC)}. Вкратце, методы MCMC пытаются генерировать выборки таким образом, чтобы веса важности $\{ \tilde{w}_1, \dots, \tilde{w}_n \}$, связанные с каждой выборкой, были постоянными. Основываясь на результатах из \S\ref{subsection:samp_strat}, это означает, что MCMC стремится генерировать выборки, пропорциональные апостериору $\posterior(\params)$, чтобы прийти к \textit{оптимальной оценке} для нашего значения ожидания.
 
-MCMC accomplishes this by creating a \textbf{chain} of 
-(correlated) parameter values 
-$\{ \params_1 \rightarrow \dots \rightarrow \params_n \}$
-over $n$ iterations such that the number of iterations $m(\params_i)$
-spent in any particular region $\delta_{\params_i}$ 
-centered on $\params_i$ is proportional to the posterior 
-density $\posterior(\params_i)$ contained within that region.
-In other words, the ``density'' of samples generated from MCMC
+MCMC достигает этого, создавая \textbf{цепочку} (коррелированных) значений параметров $\{ \params_1 \rightarrow \dots \rightarrow \params_n \}$ за $n$ итераций так, что число итераций $m(\params_i)$, проведенных в любой конкретной области $\delta_{\params_i}$ с центром на $\params_i$, пропорционально плотности апостериора $\posterior(\params_i)$, содержащейся в этой области. Другими словами, "плотность'' выборок, полученных в результате MCMC
 \begin{equation}
     \rho(\params) \equiv \frac{m(\params)}{n}
 \end{equation}
-at position $\params$ integrated over $\delta_{\params}$ is approximately
+в позиции $\params$, интегрированной по $\delta_{\params}$, составляет приблизительно
 \begin{equation}
     \int_{\params \in \delta_{\params}} \posterior(\params) \deriv \params
     \approx \int_{\params \in \delta_{\params}} \rho(\params) \deriv \params 
     \approx n^{-1} \sum_{j=1}^{n} \indicator{\params_j \in \delta_{\params}}
 \end{equation}
-where $\indicator{\cdot}$ is the \textbf{indicator function} which evaluates to
-$1$ if the inside condition is true and $0$ otherwise. We can therefore
-approximate the density by simply
-adding up the number of samples within $\delta_{\params}$
-and normalizing by the total number of samples $n$.
-A schematic illustration of this concept is shown in
-{\color{red} \autoref{fig:mcmc}}.
+где $\indicator{\cdot}$ - \textbf{индикаторная функция}, которая оценивается в $1$, если внутреннее условие истинно, и в $0$ в противном случае. Таким образом, мы можем аппроксимировать плотность простым сложением количества образцов в пределах $\delta_{\params}$ и нормировкой на общее количество образцов $n$. Схематическая иллюстрация этой концепции показана на {\color{red} \autoref{fig:mcmc}}.
 
 \begin{figure}
 \begin{center}
 \includegraphics[width=\textwidth]{figures/fig8.png}
 \end{center}
-\caption{A schematic illustration of Markov Chain Monte Carlo (MCMC).
-MCMC tries to create a chain of $n$ (correlated) samples 
-$\{ \params_1 \rightarrow \dots \rightarrow \params_n \}$ (top)
-such that the number of samples $m$ in some particular volume
-$\delta$ gives a relative density $m/n$ (middle) comparable to the
-posterior $\posterior(\params)$ integrated over the same volume (bottom).
-See \S\ref{sec:mcmc} for additional details.
-}\label{fig:mcmc}
-\end{figure}
+\caption{Схематическая иллюстрация Марковской цепи Монте-Карло (MCMC). MCMC пытается создать цепочку из $n$ (коррелированных) выборок $\{ \params_1 \rightarrow \dots \rightarrow \params_n \}$ (вверху) такую, что количество выборок $m$ в некотором определенном объеме $\delta$ дает относительную плотность $m/n$ (в середине), сравнимую с апостериором $\posterior(\params)$, интегрированным по этому же объему (внизу). Дополнительные подробности см. в \S\ref{sec:mcmc}. }\label{fig:mcmc} \end{figure}
 
-While this will just be approximately true for any finite $n$,
-as the number of samples $n \rightarrow \infty$ this procedure generally
-guarantees that $\rho(\params) \rightarrow \posterior(\params)$ 
-everywhere.\footnote{Discussing the details of exactly when/where this
-condition holds in theory and in practice
-is beyond the scope of this paper but can be found in
-other references such as \citet{asmussenglynn11} and \citet{brooks+11}.}
-In theory then, once we have a reasonable enough
-approximation for $\rho(\params)$, we can also use the 
-samples $\{ \params_1 \rightarrow \dots \rightarrow \params_n \}$
-generated from $\rho(\params)$
-to get an estimate for the evidence using the 
-same substitution trick introduced in \S\ref{sec:montecarlo}:
+Хотя это будет лишь приблизительно верно для любого конечного $n$, с ростом числа выборок $n \rightarrow \infty$ эта процедура гарантирует, что $\rho(\params)\rightarrow \posterior(\params)$ везде. \footnote{Обсуждение деталей того, когда/где именно это условие выполняется в теории и на практике, выходит за рамки данной статьи, но может быть найдено в других источниках, таких как \citet{asmussenglynn11} и \citet{brooks+11}.} Теоретически, когда у нас есть достаточно разумное приближение для $\rho(\params)$, мы также можем использовать выборки $\{ \params_1 \rightarrow \dots \rightarrow \params_n \}$, полученные из $\rho(\params)$, чтобы получить оценку для доказательства, используя тот же трюк с подстановкой, который был представлен в \S\ref{sec:montecarlo}:
 \begin{align}
     \evidence
     = \int \frac{\tilde{\posterior}(\params)}{\rho(\params)}
@@ -962,12 +896,10 @@ same substitution trick introduced in \S\ref{sec:montecarlo}:
     \approx n^{-1} \sum_{i=1}^{n} 
     \frac{\tilde{\posterior}(\params_i)}{\rho(\params_i)}
 \end{align}
-This is just the average of the ratio 
-between $\tilde{\posterior}(\params_i)$ and $\rho(\params_i)$
-over all $n$ samples.
+Это просто среднее значение отношения $\tilde{\posterior}(\params_i)$ и $\rho(\params_i)$
+по всем $n$ выборкам.
 
-Finally, since our MCMC procedure gives us a series of $n$
-samples from the posterior, our expectation value simply reduces to
+Наконец, поскольку наша процедура MCMC дает нам серию из $n$ выборок из апостериорного значения, наше матожидание просто сводится к
 \begin{equation}
     \meanwrt{f(\params)}{\posterior} 
     \approx \frac{n^{-1} \sum_{i=1}^{n} f_i \tilde{w}_i}
@@ -976,352 +908,140 @@ samples from the posterior, our expectation value simply reduces to
     {n^{-1} \sum_{i=1}^{n} 1}
     = n^{-1} \sum_{i=1}^{n} f_i
 \end{equation}
-This is just the \textbf{sample mean} of
-the corresponding $\{ f_1, \dots, f_n \}$ values over
-our set of $n$ samples. 
+Это просто \textbf{выборочное среднее} соответствующих $\{ f_1, \dots, f_n \}$ значений над нашим набором $n$ выборок. 
 
-I wish to take a moment here to highlight two features of the above results
-related to common misconceptions surrounding MCMC methods. First, there
-is a widespread belief that because MCMC methods generate a chain of 
-samples whose behavior \textit{follows} the posterior, we do not
-have any ability to use them to estimate normalizing constants such
-as the evidence $\evidence$. As shown above, this is not true at all: not only
-\textit{can} we do this using $\rho(\params)$, but the estimate we derive
-is actually a \textit{consistent} one (although it will converge slowly;
-see \S\ref{subsec:post_approx}).
+Я хотел бы остановиться на двух особенностях приведенных выше результатов, связанных с распространенными заблуждениями относительно методов MCMC. Во-первых, широко распространено мнение, что поскольку методы MCMC генерируют цепочку выборок, поведение которых \textit{следует} за апостериором, мы не можем использовать их для оценки нормирующих констант, таких как доказательство $\evidence$. Как было показано выше, это совсем не так: мы не только \textit{можем} сделать это с помощью $\rho(\params)$, но и оценка, которую мы получаем, на самом деле является \textit{согласованной} (хотя она будет сходиться медленно; см. \S\ref{subsec:post_approx}).
 
-The second misconception is that the primary goal of MCMC is to
-``approximate'' or ``explore'' the posterior. In other words,
-to estimate $\rho(\params)$. However, as shown above,
-the ability of MCMC methods to estimate $\rho(\params)$
-is really only useful for estimating the evidence $\evidence$. In fact, by tracing
-its heritage from Importance Sampling-based methods, we see its primary purpose
-is actually \textit{to estimate expectation values} (i.e.
-integrals \textit{over} the posterior). I have explicitly tried to avoid
-introducing any mention of ``approximating the posterior'' up to this point
-in order to avoid this misconception, but will spend some time discussing
-this point in more detail in \S\ref{subsec:post_approx}.
+Второе заблуждение заключается в том, что основной целью MCMC является ``приближение'' или ``исследование'' апостериорного значения. Другими словами, оценить $\rho(\params)$. Однако, как было показано выше, способность методов MCMC оценивать $\rho(\params)$ действительно полезна только для оценки доказательств $\evidence$. На самом деле, прослеживая наследие методов, основанных на выборке по важности, мы видим, что их основная цель - \textit{оценивать значения ожиданий} (т.е. интегралы \textit{над} апостериором). До этого момента я явно старался избегать упоминаний об ``аппроксимации апостериорного значения``, чтобы избежать этого заблуждения, но я потрачу некоторое время на более подробное обсуждение этого момента в \S\ref{subsec:post_approx}.
 
-To summarize, the idea behind MCMC is to simulate a series of
-values $\{ \params_1 \rightarrow \dots \rightarrow \params_n \}$
-in a way that their density $\rho(\params)$ after a given amount
-of time follows the underlying posterior $\posterior(\params)$. We can
-then estimate the posterior within any particular region $\delta_{\params}$
-by simply counting up how many samples we simulate there and normalizing by
-the total number of samples $n$ we generated. Because we are also
-simulating values directly from the posterior, any expectation values
-also reduce to simple sample averages. This procedure is incredibly
-intuitive and part of the reason MCMC methods have 
-become so widely adopted.
+Вкратце, идея MCMC заключается в моделировании серии значений $\{ \params_1 \rightarrow \dots \rightarrow \params_n \}$ таким образом, чтобы их плотность $\rho(\params)$ через заданный промежуток времени следовала базовому постеру $\posterior(\params)$. Затем мы можем оценить апостериор в любой конкретной области $\delta_{\params}$, просто подсчитав, сколько образцов мы там смоделировали, и нормировав на общее количество образцов $n$, которые мы сгенерировали. Поскольку мы также моделируем значения непосредственно из апостериорного ряда, любые матожидания также сводятся к простым выборочным средним. Эта процедура невероятно интуитивна и является одной из причин, по которой методы MCMC получили столь широкое распространение.
 
-\subsection{Generating Samples with the Metropolis-Hastings Algorithm} \label{subsec:mh}
+\subsection{Генерирование выборок с помощью алгоритма Метрополиса-Гастингса} \label{subsec:mh}
 
-There is a vast literature on various approaches to generating samples
-\textbf{(see, e.g., cites)}. Since this article focuses on
-building up a \textit{conceptual understanding} of MCMC methods, 
-exploring how the majority of these methods behave both in theory and
-in practice is beyond the scope of this paper.
+Существует обширная литература, посвященная различным подходам к генерации выборок \textbf{(см., например, ссылки)}. Поскольку данная статья посвящена созданию \textit{концептуального понимания} методов MCMC, изучение поведения большинства этих методов как в теории, так и на практике выходит за рамки данной статьи.
 
-Instead of an overview, I aim to clarify the basics of how these methods operate.
-The central idea is that we want a way to generate new samples 
-$\params_i \rightarrow \params_{i+1}$ such that the
-distribution of the final samples $\rho(\params)$ as $n \rightarrow \infty$
-(1) is \textbf{stationary} (i.e. it converges to something) and 
-(2) is equal to the $\posterior(\params)$. These are essentially analogs
-to the convergence and consistency constraints 
-discussed in \S\ref{subsec:consistent}.
+Вместо обзора я стремлюсь прояснить основы работы этих методов. Центральная идея заключается в том, что нам нужен способ генерировать новые выборки $\params_i \rightarrow \params_{i+1}$ таким образом, чтобы распределение конечных выборок $\rho(\params)$ по мере роста $n \rightarrow \infty$ (1) было \textbf{стационарным} (то есть сходилось к чему-то) и (2) было равно $\posterior(\params)$. По сути, это аналоги ограничений сходимости и непротиворечивости, рассмотренных в \S\ref{subsec:consistent}.
 
-We can satisfy the first condition by invoking \textbf{detailed balance}.
-This is the idea that probability is conserved when moving
-from one position to another (i.e. the process is reversible). More formally,
-this just reduces to factoring of probability:
+Мы можем удовлетворить первое условие, вызвав \textbf{detailed balance}. Это идея о том, что вероятность сохраняется при переходе из одной позиции в другую (т.е. процесс обратим). Более формально это сводится к факторизации вероятности:
 \begin{equation}
     P(\params_{i+1}|\params_i) P(\params_i) 
     = P(\params_{i+1}, \params_i)
     = P(\params_i|\params_{i+1}) P(\params_{i+1}) 
 \end{equation}
-where $P(\params_{i+1}|\params_i)$ is the probability of moving
-from $\params_i \rightarrow \params_{i+1}$ and $P(\params_{i}|\params_{i+1})$ 
-is the probability of the reverse move from 
-$\params_{i+1} \rightarrow \params_i$. 
-Rearranging then gives the following constraint:
+где $P(\params_{i+1}|\params_i)$ - вероятность перехода из $\params_i \rightarrow \params_{i+1}$, а $P(\params_{i}|\params_{i+1})$ - вероятность обратного перехода из $\params_{i+1} \rightarrow \params_i$. 
+Перестановка дает следующее ограничение:
 \begin{equation}
     \frac{P(\params_{i+1}|\params_i)}{P(\params_i|\params_{i+1})} 
     = \frac{P(\params_{i+1})}{P(\params_i)}
     = \frac{\posterior(\params_{i+1})}{\posterior(\params_i)}
 \end{equation}
-where the final equality comes from the fact that the distribution
-we are trying to generate samples from is the posterior $\posterior(\params)$.
+где последнее равенство вытекает из того факта, что распределение, из которого мы пытаемся получить выборки, является апостериорным $\posterior(\params)$.
 
-We now need to implement a procedure that enables us to actually
-move to new positions by computing this probability. 
-We can do this by breaking each move into two steps. First,
-we want to \textit{propose} a new position 
-$\params_i \rightarrow \params_{i+1}'$ based on a
-\textbf{proposal distribution} $\proposal(\params_{i+1}'|\params_i)$
-similar in nature to the $\proposal(\params)$ used in to 
-Importance Sampling (\S\ref{subsec:importance}). 
-Then we will either decide to \textbf{accept} the new position
-($\params_{i+1}=\params_{i+1}'$) or \textbf{reject} the new position
-($\params_{i+1}=\params_i$) with some \textbf{transition probability}
-$T(\params_{i+1}'|\params_i)$.
-Combining these terms together then gives us the probability
-of moving to a new position:
+Теперь нам нужно реализовать процедуру, которая позволит нам фактически переходить на новые позиции, вычисляя эту вероятность. Мы можем сделать это, разбив каждое перемещение на два шага. Сначала мы хотим \textit{предложить} новую позицию $\params_i \rightarrow \params_{i+1}'$ на основе \textbf{распределения предложений} $\proposal(\params_{i+1}'|\params_i)$, аналогичного $\proposal(\params)$, используемого в Importance Sampling (\S\ref{subsec:importance}). Затем мы либо примем решение \textbf{принять} новую позицию ($\params_{i+1}=\params_{i+1}'$), либо \textbf{отклонить} новую позицию ($\params_{i+1}=\params_i$) с некоторой \textbf{вероятностью перехода} $T(\params_{i+1}'|\params_i)$. Комбинируя эти условия, мы получаем вероятность перехода на новую позицию:
 \begin{equation}
     P(\params_{i+1}|\params_i) 
     \equiv \proposal(\params_{i+1}|\params_i) T(\params_{i+1}|\params{i})
 \end{equation}
 
-As with Importance Sampling, we can choose $\proposal(\params_{i+1}'|\params_i)$
-so that it is straightforward to propose new samples
-$\params_{i+1}'$ by numerical simulation. 
-We then need to determine the transition probability
-$T(\params_{i+1}'|\params_i)$ of whether we should accept 
-or reject $\params_{i+1}'$. Substituting into
-our expression for detailed balance, we find that our form for the
-transition probability must satisfy the following constraint:
+Как и в случае с выборкой по важности, мы можем выбрать $\proposal(\params_{i+1}'|\params_i)$ таким образом, чтобы было просто предлагать новые образцы $\params_{i+1}'$ путем численного моделирования. Затем нам нужно определить вероятность перехода $T(\params_{i+1}'|\params_i)$ от того, должны ли мы принять или отклонить $\params_{i+1}'$. Подставляя в наше выражение для детального баланса, мы обнаруживаем, что наша форма для вероятности перехода должна удовлетворять следующему ограничению:
 \begin{equation}
     \frac{T(\params_{i+1}|\params_i)}{T(\params_i|\params_{i+1})} 
     = \frac{\posterior(\params_{i+1})}{\posterior(\params_i)}
     \frac{\proposal(\params_i|\params_{i+1})}{\proposal(\params_{i+1}|\params_i)}
 \end{equation}
-It is straightforward to show that the 
-\textbf{Metropolis criterion} \cite{metropolis+53_alt}
+Легко показать, что \textbf{критерий Метрополиса} \cite{metropolis+53_alt}
 \begin{equation}
     T(\params_{i+1}|\params_i)
     \equiv \min\left[1, \frac{\posterior(\params_{i+1})}{\posterior(\params_i)}
     \frac{\proposal(\params_i|\params_{i+1})}{\proposal(\params_{i+1}|\params_i)}
     \right]
 \end{equation}
-satisfies this constraint.
+удовлетворяет этому ограничению.
 
-Generating samples following this approach can be done using the
-\textbf{Metropolis-Hastings (MH) Algorithm} \citep{metropolis+53_alt,hastings70}:
-\begin{enumerate}
-    \item \textit{Propose} a new position $\params_i \rightarrow \params_{i+1}'$
-    by generating a sample from the proposal distribution
-    $\proposal(\params_{i+1}'|\params_i)$.
-    \item \textit{Compute} the transition probability
-    $T(\params_{i+1}'|\params_i)
-    = \min\left[1, \frac{\posterior(\params_{i+1}')}{\posterior(\params_i)}
-    \frac{\proposal(\params_i|\params_{i+1}')}{\proposal(\params_{i+1}'|\params_i)}
-    \right]$.
-    \item \textit{Generate} a random number $u_{i+1}$ from $[0, 1]$.
-    \item If $u_{i+1} \leq T(\params_{i+1}'|\params_i)$, \textit{accept}
-    the move and set $\params_{i+1} = \params_{i+1}'$. 
-    If $u_{i+1} > T(\params_{i+1}'|\params_i)$, \textit{reject} the move
-    and set $\params_{i+1} = \params_i$.
-    \item Increment $i = i + 1$ and repeat this process.
-\end{enumerate}
-See {\color{red} \autoref{fig:mh}} for a schematic illustration of this process.
+Генерировать образцы, следуя этому подходу, можно с помощью \textbf{алгоритма Метрополиса-Гастингса (MH)} \citep{metropolis+53_alt,hastings70}:
+	\begin{enumerate}
+		\item \textit{Предлагаем} новую позицию $\params_i \rightarrow \params_{i+1}'$, генерируя выборку из распределения предложений $\proposal(\params_{i+1}'|\params_i)$.
+		\item \textit{Вычислить} вероятность перехода $T(\params_{i+1}'|\params_i)
+		= \min\left[1, \frac{\posterior(\params_{i+1}')}{\posterior(\params_i)}
+		\frac{\proposal(\params_i|\params_{i+1}')}{\proposal(\params_{i+1}'|\params_i)}
+		\right]$.
+		\item \textit{Генерируем} случайное число $u_{i+1}$ из $[0, 1]$.
+		\item Если $u_{i+1} \leq T(\params_{i+1}'|\params_i)$, \textit{Принять} ход и установите $\params_{i+1} = \params_{i+1}'$. 
+		Если $u_{i+1} > T(\params_{i+1}'|\params_i)$, \textit{отклонить} ход и установите $\params_{i+1} = \params_i$.
+		\item Увеличиваем $i = i + 1$ и повторяем этот процесс.
+	\end{enumerate}
+	См. {\color{red} \autoref{fig:mh}} для схематической иллюстрации этого процесса.
 
 \begin{figure}
 \begin{center}
 \includegraphics[width=\textwidth]{figures/fig10.png}
 \end{center}
-\caption{A schematic illustration of the Metropolis-Hastings
-algorithm. At a given iteration $i$, we have generated a chain
-of samples $\{ \params_1 \rightarrow \dots \rightarrow \params_i \}$
-(white) up to the current position $\params_i$ (red) whose behavior follows
-the underlying posterior $\posterior(\params)$ (viridis color map).
-We then propose a new position $\params_{i+1}'$ (yellow) from the proposal distribution
-(orange shaded region). We then compute 
-the transition probability $T(\params_{i+1}'|\params_i)$
-(white) based on the posterior $\proposal(\params)$ 
-and proposal $\proposal(\params'|\params)$ densities. We then
-generate a random number $u_{i+1}$ uniformly from 0 to 1. If
-$u_{i+1} \leq T(\params_{i+1}'|\params_i)$, we accept the move
-and make our next position in the chain $\params_{i+1} = \params_{i+1}'$.
-If we reject the move, then $\params_{i+1} = \params_{i}$.
-See \S\ref{subsec:mh} for additional details.
-}\label{fig:mh}
-\end{figure}
+\caption{Схематическая иллюстрация алгоритма Метрополиса-Хастингса. На заданной итерации $i$ мы сгенерировали цепочку выборок $\{ \params_1 \rightarrow \dots \rightarrow \params_i \}$ (белые) до текущей позиции $\params_i$ (красные), поведение которой следует за базовым постерным $\posterior(\params)$ (цветовая карта Виридиса). Затем мы предлагаем новую позицию $\params_{i+1}'$ (желтая) из распределения предложений (оранжевая заштрихованная область). Затем мы вычисляем вероятность перехода $T(\params_{i+1}'|\params_i)$ (белый цвет) на основе апостериорных плотностей $\proposal(\params)$ и $\proposal(\params'|\params)$. Затем мы генерируем случайное число $u_{i+1}$ равномерно от 0 до 1. Если $u_{i+1} \leq T(\params_{i+1}'|\params_i)$, мы принимаем ход и делаем следующую позицию в цепочке $\params_{i+1} = \params_{i+1}'$. Если мы отклоняем ход, то $\params_{i+1} = \params_{i}$. Дополнительные подробности см. в \S\ref{subsec:mh}. }\label{fig:mh} \end{figure}
 
-Because algorithms like the MH algorithm generate a \textit{chain} of states where the
-next proposed position only depends on the current position rather than
-any of its past positions (i.e. it ``forgets'' the past),
-they are known as \textbf{Markov processes}.
-Combining these two terms with the Monte Carlo nature of simulating new
-positions is what gives Markov Chain Monte Carlo (MCMC) its namesake.
+Поскольку алгоритмы, подобные алгоритму MH, генерируют \textit{цепочку} состояний, в которых следующее предлагаемое положение зависит только от текущего положения, а не от любого из прошлых положений (т.е. он ``забывает'' прошлое), они известны как \textbf{марковские процессы}. Сочетание этих двух терминов с природой Монте-Карло для моделирования новых позиций и дало Марковской цепи Монте-Карло (MCMC) ее название.
 
-An issue with generating a chain of samples in practice is the
-fact that our chain only has finite length and a starting position $\params_0$. 
-If our chain were infinitely long, we would expect it
-to visit every possible position in parameter space, rendering
-the exact starting position is unimportant. However, since in practice we terminate 
-sampling after only $n$ iterations, starting from a location $\params_0$ that has
-an extremely low probability means an inordinate fraction
-of our $n$ samples will occupy this low-probability region, possibly biasing
-our final results. Since we have limited knowledge beforehand about where
-$\params_0$ is relative to our posterior, 
-in practice we generally want to remove the initial
-chain of states once we are confident our chain has begun sampling from
-higher-probability regions. Discussing various approaches
-for identifying and removing samples from this \textbf{burn-in period} 
-is beyond the scope of this article; for additional information,
-please see \citet{gelmanrubin92}, \citet{gelman+13}, 
-and \citet{vehtari+19} along with references therein.
+Проблема с генерированием цепочки образцов на практике заключается в том, что наша цепочка имеет только конечную длину и начальную позицию $\params_0$. Если бы наша цепочка была бесконечно длинной, мы бы ожидали, что она посетит все возможные позиции в пространстве параметров, поэтому точная начальная позиция не имеет значения. Однако, поскольку на практике мы прекращаем выборку только после $n$ итераций, старт с позиции $\params_0$, имеющей крайне низкую вероятность, означает, что непомерно большая доля наших $n$ выборок займет эту низковероятную область, что может исказить наши окончательные результаты. Так как мы заранее имеем ограниченное представление о том, где находится $\params_0$ относительно нашего апостериорного значения, на практике мы обычно хотим удалить начальную цепочку состояний, как только убедимся, что наша цепочка начала делать выборки из областей с более высокой вероятностью. Обсуждение различных подходов к определению и удалению образцов из этого \textbf{периода сгорания} выходит за рамки данной статьи; за дополнительной информацией обращайтесь к \citet{gelmanrubin92}, \citet{gelman+13}, и \citet{vehtari+19}, а также к ссылкам на них.
 
-\subsection{Effective Sample Size and Auto-Correlation Time} \label{subsec:autocorr}
+\subsection{Эффективный размер выборки и время автокорреляции} \label{subsec:autocorr}
 
-At this point, MCMC seems like it should be the optimal method for
-any situation: by simulating samples directly from the (unknown) posterior,
-we can achieve an optimal estimate for any expectation values we wish
-to evaluate. In practice, however, this does not hold true.
-MCMC values rely on specific algorithmic procedures such as 
-the MH algorithm to generate samples,
-whose limiting behavior \textit{reduces to} a chain of samples
-$\{ \params_1 \rightarrow \dots \rightarrow \params_n \}$
-whose distribution follows the posterior. Any given sample $\params_i$,
-however, is more likely than not to be 
-\textbf{correlated} with both the previous sample in the 
-sequence $\params_{i-1}$ and the subsequent sample in the sequence
-$\params_{i+1}$.
+На данный момент кажется, что MCMC должен быть оптимальным методом для любой ситуации: моделируя выборки непосредственно из (неизвестного) заднего плана, мы можем получить оптимальную оценку для любого значения ожидания, которое хотим оценить. На практике, однако, это не так. Значения MCMC опираются на специальные алгоритмические процедуры, такие как алгоритм MH, для генерации выборок, чье предельное поведение \textit{ сводится к} цепочке выборок $\{ \params_1 \rightarrow \dots \rightarrow \params_n \}$, чье распределение следует за апостериором. Однако любая заданная выборка $\params_i$ с большей вероятностью будет \textbf{коррелировать} как с предыдущей выборкой в последовательности $\params_{i-1}$, так и с последующей выборкой в последовательности $\params_{i+1}$.
 
-This occurs for two reasons. First, new positions $\params_i$ drawn
-from $\proposal(\params_i|\params_{i-1})$ by construction tend to depend
-on the current position $\params_{i-1}$. This means that the position
-we propose at iteration $i+1$ from will 
-be correlated with the position at iteration $i$, 
-which itself will be correlated with the position at
-iteration $i-1$, etc. 
+Это происходит по двум причинам. Во-первых, новые позиции $\params_i$, взятые из $\proposal(\params_i|\params_{i-1})$, по конструкции имеют тенденцию зависеть от текущей позиции $\params_{i-1}$. Это означает, что позиция, которую мы предложим на итерации $i+1$, будет коррелировать с позицией на итерации $i$, которая сама будет коррелировать с позицией на итерации $i-1$, и т. д. 
 
-Second, even if we set
-$\proposal(\params'|\params)=\proposal(\params')$ so that all
-of our proposed positions are uncorrelated, 
-our transition probability $T(\params'|\params)$ still ensures 
-that we will eventually reject the new position 
-so that $\params_{i+1}=\params_{i}$.
-Since samples at exactly the same position are maximally correlated,
-this ensures that samples from our chain will ``on average'' have non-zero
-correlations. Note that having low \textbf{acceptance fractions} 
-(i.e. the fraction of proposals that are accepted rather than rejected)
-will lead to a larger fraction of the chain containing 
-these perfectly correlated samples, increasing the overall correlation.
+Во-вторых, даже если мы зададим $\proposal(\params'|\params)=\proposal(\params')$, чтобы все наши предложенные позиции были некоррелированы, наша вероятность перехода $T(\params'|\params)$ все равно гарантирует, что мы в конечном итоге отклоним новую позицию так, что $\params_{i+1}=\params_{i}$. Поскольку образцы, находящиеся в одной и той же позиции, максимально коррелированы, это гарантирует, что образцы из нашей цепочки будут ``в среднем'' иметь ненулевые корреляции. Заметим, что при низких \textbf{долях принятия} (т.е. долях предложений, которые принимаются, а не отклоняются) большая часть цепочки будет содержать эти идеально коррелированные образцы, что увеличит общую корреляцию.
 
-As mentioned in \S\ref{subsec:ess}, correlated samples
-provide less information about the underlying distribution they
-are sampled from since their behavior doesn't just depend on the
-underlying distribution but also the neighboring samples in the
-sequence. Samples that are more highly correlated then should 
-lead to a reduced ESS.
+Как уже говорилось в \S\ref{subsec:ess}, коррелированные выборки предоставляют меньше информации о базовом распределении, из которого они взяты, поскольку их поведение зависит не только от базового распределения, но и от соседних выборок в последовательности. Таким образом, выборки с более высокой степенью корреляции должны приводить к уменьшению ESS.
 
-This intuition can be quantified by introducing
-the \textbf{auto-covariance} $C(t)$ 
-for some integer lag $t$. Assuming that we have an infinitely long chain
-$\{ \params_{1} \rightarrow \dots \}$,
-the auto-covariance $C(t)$ is:
+Эту интуицию можно выразить количественно, введя \textbf{автоковариацию} $C(t)$ для некоторого целочисленного запаздывания $t$. Предположим, что у нас есть бесконечно длинная цепочка $\{ \params_{1} \rightarrow \dots \}$, автоковариация $C(t)$ имеет вид:
 \begin{equation}
     C(t) \equiv \meanwrt{(\params_{i} - \bar{\params})
     \cdot (\params_{i+t} - \bar{\params})}{i}
     = \lim_{n\rightarrow\infty} \frac{1}{n}
     \sum_{i=1}^{n} (\params_{i} - \bar{\params}) \cdot (\params_{i+t} - \bar{\params})
 \end{equation}
-where $\cdot$ is the dot product. In other words, 
-we want to know the covariance between $\params_i$ at some iteration
-$i$ and $\params_{i+t}$ at some other iteration $i+t$, averaged
-over all all possible pairs of samples $(\params_i, \params_{i+t})$
-in our infinitely long chain. Note that the amplitude $|C(t)|$
-will be maximized at $|C(t=0)|$,
-where the two samples being compared are identical,
-and minimized with $|C(t)|=0$ when 
-$\params_{i}$ and $\params_{i+t}$ are completely independent
-from each other.
+где $\cdot$ - точечное произведение. Другими словами, мы хотим знать ковариацию между $\params_i$ на некоторой итерации $i$ и $\params_{i+t}$ на некоторой другой итерации $i+t$, усредненную по всем возможным парам образцов $(\params_i, \params_{i+t})$ в нашей бесконечно длинной цепочке. Заметим, что амплитуда $|C(t)|$ будет максимальна при $|C(t=0)|$, когда два сравниваемых образца идентичны, и минимальна при $|C(t)|=0$, когда $\params_{i}$ и $\params_{i+t}$ полностью независимы друг от друга.
 
-Using the auto-covariance, we can define the corresponding
-\textbf{auto-correlation} $A(t)$ as
+Используя автоковариацию, мы можем определить соответствующую \textbf{автокорреляцию} $A(t)$ как
 \begin{equation}
     A(t) \equiv \frac{C(t)}{C(0)}
 \end{equation}
-This now measures the average degree of correlation between 
-samples separated by an integer lag $t$. In the case where $t=0$,
-both samples are identical and $A(t=0) = 1$. In the case
-where the samples are uncorrelated over lag $t$,
-$A(t) = 0$.
+Теперь измеряется средняя степень корреляции между выборками, разделенными целочисленным лагом $t$. В случае, когда $t=0$, обе выборки идентичны и $A(t=0) = 1$. В случае, когда выборки некоррелированы на протяжении лага $t$, $A(t) = 0$.
 
-The overall \textbf{auto-correlation time}
-for our chain is just the auto-correlation $A(t)$ summed over
-all non-zero lags ($t \neq 0$):
+Общее \textbf{время автокорреляции} для нашей цепочки - это просто автокорреляция $A(t)$, просуммированная по всем ненулевым лагам ($t \neq 0$):
 \begin{equation}
     \tau \equiv \sum_{t=-\infty}^{\infty} A(t) - 1
     = 2 \sum_{t=1}^{\infty} A(t)
 \end{equation}
-where the $-1$ comes from the fact that
-the auto-correlation with no lag is just $A(t=0) = 1$
-(i.e. each sample perfectly correlates with itself) and
-the substitution arises from the fact that $A(t) = A(-t)$ by symmetry.
-If $\tau = 0$, then it takes
-no time at all for samples to become uncorrelated and the
-samples can be assumed to be iid. If $\tau > 0$, then
-it takes on average $\tau$ additional iterations for
-samples to become uncorrelated. 
-An illustration of this process is shown in 
-{\color{red} \autoref{fig:autocorr}}.
+где $-1$ следует из того, что автокорреляция без запаздывания равна $A(t=0) = 1$ (т.е. каждая выборка идеально коррелирует сама с собой), а подстановка обусловлена тем, что $A(t) = A(-t)$ в силу симметрии. Если $\tau = 0$, то для того, чтобы выборки стали некоррелированными, не требуется никакого времени, и выборки можно считать иидными. Если $\tau > 0$, то в среднем требуется $\tau$ дополнительных итераций, чтобы образцы стали некоррелированными. Иллюстрация этого процесса показана на {\color{red} \autoref{fig:autocorr}}.
 
 \begin{figure}
 \begin{center}
 \includegraphics[width=\textwidth]{figures/fig9.png}
 \end{center}
-\caption{A schematic illustration of the auto-correlation
-associated with MCMC. MCMC methods generate a chain of
-samples $\{ \params_1 \rightarrow \dots \rightarrow \params_n \}$ (top),
-but these tend to be strongly correlated on small length scales (top middle).
-We can quantify the degree of correlation by
-computing the corresponding auto-correlation $A(t)$
-over our set of samples and all possible time lags $t$
-(bottom middle). This quantity is $1$ when $t=0$
-and drops to $0$ as $t \rightarrow \pm \infty$. The overall
-auto-correlation time $\tau$ associated with our chain of
-samples is then just the integrated auto-correlation over $t \neq 0$.
-See \S\ref{subsec:autocorr} for additional details.
-}\label{fig:autocorr}
+\caption{Схематическая иллюстрация автокорреляции, связанной с MCMC. Методы MCMC генерируют цепочку выборок $\{ \params_1 \rightarrow \dots \rightarrow \params_n \}$ (вверху), но они имеют тенденцию быть сильно коррелированными на малых масштабах длины (вверху посередине). Мы можем количественно оценить степень корреляции, вычислив соответствующую автокорреляцию $A(t)$ для нашего набора образцов и всех возможных временных задержек $t$ (внизу посередине). Эта величина равна $1$, когда $t=0$, и уменьшается до $0$, когда $t \rightarrow \pm \infty$. Общее время автокорреляции $\tau$, связанное с нашей цепочкой выборок, является просто интегрированной автокорреляцией по $t \neq 0$. Дополнительные подробности см. в \S\ref{subsec:autocorr}. }\label{fig:autocorr}
 \end{figure}
 
-Incorporating the auto-correlation time leads directly
-to a modified definition for the ESS:
+Учет времени автокорреляции напрямую приводит к модифицированному определению ESS:
 \begin{equation}
     n_{\rm eff}' \equiv \frac{n_{\rm eff}}{1 + \tau}
 \end{equation}
-In practice, we cannot precisely compute $\tau$ since
-we do not have an infinite number of samples and do not know
-$\posterior(\params)$. Therefore we often need to
-generate an estimate $\hat{\tau}$ of the auto-correlation time
-using the existing set of $n$ samples we have. While discussing
-various approaches taken to derive $\hat{\tau}$ is beyond the
-scope of this work, please see \citet{brooks+11} 
-for additional details.
+На практике мы не можем точно вычислить $\tau$, поскольку у нас нет бесконечного числа выборок и мы не знаем $\posterior(\params)$. Поэтому часто требуется получить оценку $\hat{\tau}$ времени автокорреляции, используя имеющийся набор образцов $n$. Хотя обсуждение различных подходов, используемых для получения $\hat{\tau}$, выходит за рамки данной работы, за дополнительными подробностями обращайтесь к \citet{brooks+11}.
 
-The fact that MCMC methods are subject to non-negative
-auto-correlation times ($\tau \geq 0$) but have optimal importance
-weights $\tilde{w}_i = 1$ give an ESS of
+Тот факт, что методы MCMC подвержены неотрицательным автокорреляционным временам ($\tau \geq 0$), но имеют оптимальные веса важности $\tilde{w}_i = 1$, дает ESS в размере
 \begin{equation}
     n_{\rm eff,MCMC}' = \frac{n_{\rm eff,MCMC}}{1 + \tau}
     = \frac{n}{1 + \tau} \leq n
 \end{equation}
-This means that \textit{there is no guarantee
-that MCMC is always the optimal choice to achieve
-the largest ESS}. In particular,
-Importance Sampling methods, which can generate
-fully iid samples with no auto-correlation time ($\tau = 0$)
-but non-optimal importance weights $\tilde{w}_i$, instead have
-an ESS of
+Это означает, что \textit{не существует гарантии, что MCMC всегда является оптимальным выбором для достижения наибольшей ESS}. В частности, методы Importance Sampling, которые могут генерировать полностью иидные выборки без времени автокорреляции ($\tau = 0$), но с неоптимальными весами важности $\tilde{w}_i$, вместо этого имеют ESS в размере
 \begin{equation}
     n_{\rm eff,IS}' = \frac{n_{\rm eff,IS}}{1 + \tau}
     = n_{\rm eff,IS} 
     = \frac{\left(\sum_{i=1}^{n} \tilde{w}_i\right)^2}
     {\sum_{i=1}^{n} \tilde{w}_i^2} \leq n
 \end{equation}
-which can be greater than $n_{\rm eff, MCMC}'$ at fixed $n$.
+которая может быть больше, чем $n_{\rm eff, MCMC}'$ при фиксированном $n$.
 
-Given the results above, it should now be clear
-that \textit{the central motivating concern of MCMC methods
-is whether they can generate a chain of samples
-with an auto-correlation time small enough to outperform
-Importance Sampling.} Whether or not
-this is true will depend on the posterior, the approach used to generate
-the chain of samples (see \S\ref{subsec:mh} and \S\ref{sec:example})
-and the proposal distribution $\proposal(\params)$ 
-used for Importance Sampling (see \S\ref{subsection:samp_strat}).
+Учитывая приведенные выше результаты, теперь должно быть ясно, что \textit{центральная мотивация методов MCMC заключается в том, могут ли они генерировать цепочку выборок с временем автокорреляции, достаточно малым, чтобы превзойти Importance Sampling}. Верно ли это, будет зависеть от апостериорного значения, подхода, используемого для генерации цепочки выборок (см. \S\ref{subsec:mh} и \S\ref{sec:example}) и распределения предложений $\proposal(\params)$, используемого для Выборки по значимости (см. \S\ref{subsection:samp_strat}).
 
 \subsection*{Exercise: MCMC over a 2-D Gaussian} \label{exercise:mcmc}
 
@@ -1418,87 +1138,42 @@ roughly should be assigned to burn-in and subsequently removed from
 our chain? Are there any possible heuristics that might help to identify
 the initial burn-in period?
 
-\section{Sampling the Posterior with MCMC} \label{sec:sampling}
+\section{Выборка последователей с помощью MCMC} \label{sec:sampling}
 
-The approach by which MCMC methods are able to generate a chain of
-samples immediately gives a mental image of our chain ``exploring'' the
-posterior. While it is true that the density of samples from the chain
-$\rho(\params) \rightarrow \posterior(\params)$ as $n \rightarrow \infty$, 
-\textit{the primary purpose of MCMC is estimating expectation values}
-$\meanwrt{f(\params)}{\posterior}$.
-Although this might seem like a subtle difference,
-this distinction is actually crucial for understanding how MCMC
-algorithms (should) behave in practice. We discuss this in more
-detail below.
+Подход, с помощью которого методы MCMC способны генерировать цепочку выборок, сразу же наводит на мысль, что наша цепочка "исследует'' апостериор. Хотя верно, что плотность выборок из цепочки $\rho(\params)\rightarrow \posterior(\params)$ как $n \rightarrow \infty$, \textit{основной целью MCMC является оценка ожидаемых значений} $\meanwrt{f(\params)}{\posterior}$. Хотя это может показаться тонкой разницей, на самом деле это различие имеет решающее значение для понимания того, как алгоритмы MCMC (должны) вести себя на практике. Ниже мы обсудим это более подробно.
 
-\subsection{Approximating the Posterior} \label{subsec:post_approx}
+\subsection{Аппроксимация апостериора} \label{subsec:post_approx}
 
-Although algorithms such as MH (\S\ref{subsec:mh}) are constructed to
-ensure the density of the chain of samples $\rho(\params)$
-generated by MCMC converges to the posterior $\posterior(\params)$
-as $n \rightarrow \infty$, this \textit{does not} necessarily translate
-into an efficient method to approximate the posterior in practice. In
-other words, $n$ might need to be extremely large for this constraint to hold.
-So how many samples do we need to ensure $\rho(\params)$ is a good approximation
-to $\posterior(\params)$?
+Хотя алгоритмы, такие как MH (\S\ref{subsec:mh}), построены таким образом, что плотность цепочки выборок $\rho(\params)$, генерируемых MCMC, сходится к апостериору $\posterior(\params)$ при $n \rightarrow \infty$, это \textit{does} не обязательно приводит к эффективному методу аппроксимации апостериора на практике. Другими словами, $n$ должно быть очень большим, чтобы это ограничение выполнялось. Так сколько же образцов нам нужно, чтобы убедиться, что $\rho(\params)$ является хорошим приближением к $\posterior(\params)$?
 
-To start, we first need to define some metric for what a ``good''
-approximation is. A reasonable one might be that we would like
-to know the posterior within some region $\delta_{\params}$
-to within some precision $\epsilon$ so that
+Для начала нам нужно определить некоторую метрику для того, что такое ``хорошее'' приближение. Разумным вариантом может быть то, что мы хотели бы знать апостериор в некоторой области $\delta_{\params}$ с точностью $\epsilon$ так, чтобы
 \begin{equation}
     \left| \frac{1}{n} \sum_{i=1}^{n} \indicator{\params_i \in \delta_{\params}} 
     - \int_{\delta_{\params}} \posterior(\params) \deriv \params \right|
     \equiv |\hat{p}(\delta_{\params}) - p(\delta_{\params})| < \epsilon
 \end{equation}
-where $p(\delta_{\params})$ is the total probability contained within
-$\delta_{\params}$ and $\hat{p}(\delta_{\params})$ is the fraction of
-the MCMC chain of samples contained within the same region. While it might
-seem strange to only estimate this for one region, I will shortly
-generalize this to encompass the
-entire\footnote{Technically the procedure outlined in this section
-only works for finite volumes. The basic intuition, however, holds even
-when parameters are unbounded although proving those results is beyond
-the scope of this work.} posterior.
+где $p(\delta_{\params})$ - полная вероятность, содержащаяся в пределах $\delta_{\params}$, а $\hat{p}(\delta_{\params})$ - доля MCMC-цепочки выборок, содержащаяся в той же области. Хотя может показаться странным оценивать это только для одной области, я вскоре обобщу это, чтобы охватить все\footnote{Технически процедура, описанная в этом разделе, работает только для конечных объемов. Однако основная интуиция работает даже при неограниченных параметрах, хотя доказательство этих результатов выходит за рамки данной работы}.
 
-In the ideal case where our samples are iid and drawn from $\posterior(\params)$,
-our samples each have a probability $p(\delta_{\params})$ 
-of being within $\delta_{\params}$.
-The probability that $\hat{p}(\delta_{\params}) = m/n$ then follows the
-\textbf{binomial distribution}:
+В идеальном случае, когда наши выборки являются иидными и взяты из $\posterior(\params)$, каждая из наших выборок имеет вероятность $p(\delta_{\params})$ оказаться в пределах $\delta_{\params}$. Вероятность того, что $\hat{p}(\delta_{\params}) = m/n$, следует \textbf{биномиальному распределению}:
 \begin{equation}
     P\left(\hat{p}(\delta_{\params}) = \frac{m}{n} \right) 
     = \binom{n}{m} \left[p(\delta_{\params})\right]^m
     \left[1 - p(\delta_{\params}) \right]^{n-m}
 \end{equation}
-In other words, our samples end up inside $\delta_{\params}$ a total of $m$ times
-with probability $p(\delta_{\params})$ and outside $\delta_{\params}$ a
-total of $n-m$ times with probability $1 - p(\delta_{\params})$. The
-additional binomial coefficient $\binom{n}{m}$ for ``$n$ choose $m$'' 
-accounts for all possible unique cases where $m$ samples can
-end up within $\delta_{\params}$ out of our total sample size of $n$.
+Другими словами, наши образцы оказываются внутри $\delta_{\params}$ всего $m$ раз с вероятностью $p(\delta_{\params})$ и вне $\delta_{\params}$ всего $n-m$ раз с вероятностью $1 - p(\delta_{\params})$. Дополнительный биномиальный коэффициент $\binom{n}{m}$ для ``$n$ выбрать $m$'' учитывает все возможные уникальные случаи, когда $m$ образцов могут оказаться внутри $\delta_{\params}$ из общего объема выборки в $n$.
 
-This distribution has a mean of $p(\delta_{\params})$, so for
-any finite $n$ we expect $\hat{p}(\delta_{\params})$ to be an
-\textbf{unbiased estimator} of $p(\delta_{\params})$:
+Это распределение имеет среднее значение $p(\delta_{\params})$, поэтому для любого конечного $n$ мы ожидаем, что $\hat{p}(\delta_{\params})$ будет \textbf{несмещенным оценщиком} $p(\delta_{\params})$:
 \begin{equation}
     \mean{\hat{p}(\delta_{\params}) - p(\delta_{\params})} 
     = p(\delta_{\params}) - p(\delta_{\params}) = 0
 \end{equation}
-The variance, however, depends on the sample size:
+Однако дисперсия зависит от размера выборки:
 \begin{equation}
     \mean{|\hat{p}(\delta_{\params}) - p(\delta_{\params})|^2}
     = \frac{p(\delta_{\params}) \left[1 - p(\delta_{\params})\right]}{n}
 \end{equation}
 
-In practice, we can expect there to be some non-zero auto-correlation
-time $\tau > 0$. This will increase the number of MCMC samples
-we will need to generate to be confident that our estimate
-$\hat{p}(\delta_{\params})$ is well-behaved. Inserting a factor
-of $1+\tau$ and substituting our expectation value from above
-into our accuracy constraint then gives a
-rough constraint for the number of samples $n$ we would require
-as a function of $\epsilon$:
+На практике мы можем ожидать, что время автокорреляции $\tau > 0$ будет ненулевым. Это увеличит количество MCMC-выборок, которые нам нужно будет сгенерировать, чтобы быть уверенными в том, что наша оценка $\hat{p}(\delta_{\params})$ является благополучной. Подставив коэффициент $1+\tau$ и подставив наше ожидание в ограничение точности, мы получим грубое ограничение на количество выборок $n$, которое нам потребуется как функция от $\epsilon$:
 \begin{equation}
     n \gtrsim 
     \frac{p(\delta_{\params}) \left[1 - p(\delta_{\params})\right]}
@@ -1507,398 +1182,130 @@ as a function of $\epsilon$:
     \left[1 - \hat{p}(\delta_{\params})\right]}
     {\epsilon^2} \times (1+\hat{\tau})
 \end{equation}
-The final substitution of $p(\delta_{\params})$ and $\tau$ with their
-noisy estimates $\hat{p}(\delta_{\params})$ and $\hat{\tau}$
-arises from the fact that
-in practice we don't know $p(\delta_{\params})$ or 
-$\tau$ (both of which require full knowledge of the posterior).
-We are therefore forced to rely on estimators
-derived from our set of $n$ samples.
+Последняя замена $p(\delta_{\params})$ и $\tau$ их зашумленными оценками $\hat{p}(\delta_{\params})$ и $\hat{\tau}$ обусловлена тем, что на практике мы не знаем ни $p(\delta_{\params})$, ни $\tau$ (и то, и другое требует полного знания постера). Поэтому мы вынуждены полагаться на оценки, полученные на основе набора выборок $n$.
 
-Let's now examine this result more closely. As expected,
-the total number of samples is proportional
-to $1 + \hat{\tau}$: if it takes longer to generate independent
-samples, then we need more samples to be confident we have characterized
-the posterior well in a given region. 
-We also see that $n \propto \epsilon^{-2}$, so that
-if we want to reduce the error by a factor of $x$ we need
-to increase our sample size by a factor of $x^2$.
+Теперь рассмотрим этот результат более внимательно. Как и ожидалось, общее количество выборок пропорционально $1 + \hat{\tau}$: если для создания независимых выборок требуется больше времени, значит, нам нужно больше выборок, чтобы быть уверенными в том, что мы хорошо охарактеризовали апостериор в данной области. Мы также видим, что $n \propto \epsilon^{-2}$, так что если мы хотим уменьшить ошибку в $x$ раз, нам нужно увеличить размер выборки в $x^2$ раз.
 
-The behavior in the numerator is more interesting. Note
-that $\hat{p}(\delta_{\params}) \left[1 - \hat{p}(\delta_{\params})\right]$
-is maximized for $\hat{p}(\delta_{\params}) = 0.5$, and so the largest
-sample size needed is when we have split our posterior directly in half.
-In all other cases the sample size needed will be smaller because
-there will be more samples outside or inside the region of interest
-whose information we can leverage. The exact value of $\hat{p}(\delta_{\params})$
-of course depends on both the posterior $\posterior(\params)$
-and the target region $\delta_{\params}$: the sample size needed to approximate
-the posterior to some $\epsilon$ 
-near the peak of the distribution (the small region where $\posterior(\params)$ is large)
-will likely be different than
-the sample size needed to accurately estimate the tails of the
-distribution (the large region where $\posterior(\params)$ is small).
+Более интересно поведение числителя. Обратите внимание, что $\hat{p}(\delta_{\params}) \left[1 - \hat{p}(\delta_{\params})\right]$ максимизируется для $\hat{p}(\delta_{\params}) = 0.5$, и поэтому наибольший размер выборки необходим, когда мы делим наше апостериор прямо пополам. Во всех остальных случаях необходимый размер выборки будет меньше, потому что за пределами или внутри интересующей нас области будет больше образцов, чью информацию мы можем использовать. Точное значение $\hat{p}(\delta_{\params})$, конечно, зависит как от апостериорного $\posterior(\params)$, так и от целевой области $\delta_{\params}$: размер выборки, необходимый для приближения апостериорного значения к некоторому $\epsilon$ вблизи пика распределения (малая область, где $\posterior(\params)$ велико), вероятно, будет отличаться от размера выборки, необходимого для точной оценки хвостов распределения (большая область, где $\posterior(\params)$ мало).
 
-While the above argument holds if we are looking to estimate the
-posterior in just \textit{one} region, ``converging to the posterior''
-implies that we want $\rho(\params)$
-to become a good approximation to $\posterior(\params)$ \textit{everywhere}.
-We can enforce this new requirement by splitting our posterior into $m$
-different sub-regions $\{ \delta_{\params_1}, \dots, \delta_{\params_m} \}$ 
-and requiring that each sub-region is well constrained:
+Хотя приведенный выше аргумент работает, если мы хотим оценить апостериор только в \textit{одной} области, ``преобразование в апостериор'' подразумевает, что мы хотим, чтобы $\rho(\params)$ стало хорошим приближением к $\posterior(\params)$ \textit{всюду}. Мы можем обеспечить выполнение этого нового требования, разбив наше послесловие на $m$ различных подобластей $\{ \delta_{\params_1}, \dots, \delta_{\params_m} \}$ и требуя, чтобы каждая подобласть была хорошо ограничена:
 \begin{equation}
     |\hat{p}(\delta_{\params_1}) - p(\delta_{\params_1})| < \epsilon_1
     \quad\quad \dots \quad\quad
     |\hat{p}(\delta_{\params_m}) - p(\delta_{\params_m})| < \epsilon_m
 \end{equation}
-Substituting in the expected errors on each of these
-constraints then gives us an approximate limit
-on the number of samples $n_j$ that we need
-to estimate the posterior in each region $\delta_{\params_j}$:
+Подставляя ожидаемые ошибки для каждого из этих ограничений дает нам приблизительное ограничение на количество выборок $n_j$, которые нам нужны для оценки апостериорного значения в каждой области $\delta_{\params_j}$:
 \begin{equation}
     n_j \gtrsim \frac{\hat{p}(\delta_{\params_j}) 
     \left[1 - \hat{p}(\delta_{\params_j})\right]}
     {\epsilon_j^2} \times (1+\hat{\tau})
 \end{equation}
-The total number of samples we need is then simply:
+Таким образом, общее количество образцов, которые нам нужны, находится просто:
 \begin{equation}
     n \gtrsim 
     \sum_{j=1}^{m} n_j
 \end{equation}
 
-This approach of dividing up our posterior into sub-regions
-is conceptually similar to the grid-based approaches
-described in \S\ref{sec:grid}. As such,
-it is also subject to the same drawbacks:
-we expect the number of regions $m$ to increase
-\textit{exponentially} with the number of dimensions $d$.
-For instance, if we just wanted to divide our posterior up
-into $m$ \textbf{orthants} we would end up with $m=2^d$ regions:
-2 in 1-D (left-right), 4 in 2-D (upper-left, lower-left,
-upper-right, lower-right), 8 in 3-D, etc.
+Такой подход к разбиению апостериора на подобласти концептуально схож с подходами на основе сетки, описанными в \S\ref{sec:grid}. Как таковой, он также подвержен тем же недостаткам: мы ожидаем, что количество регионов $m$ будет увеличиваться \textit{экспоненциально} с числом измерений $d$. Например, если бы мы просто хотели разделить наш апостериор на $m$ \textbf{orthants}, то в итоге мы получили бы $m=2^d$ областей: 2 в одномерном (слева направо), 4 в двухмерном (верхний-левый, нижний-левый, верхний-правый, нижний-правый), 8 в трехмерном и т.д.
 
-This effect implies that we should in general expect
-the number of samples required to ensure $\rho(\params)$ is a good
-approximation to $\posterior(\params)$ for some specified accuracy $\epsilon$
-to scale as
+Этот эффект означает, что в общем случае количество выборок, необходимых для того, чтобы $\rho(\params)$ было хорошим приближением к $\posterior(\params)$ для некоторой заданной точности $\epsilon$, будет иметь вид
 \begin{equation}
     n \gtrsim k^d
 \end{equation}
-where $k$ is a constant that depends on the accuracy requirements.
-This puts approximating the full posterior firmly in the 
-``curse of dimensionality'' regime (see \S\ref{subsec:curse}).\footnote{
-A direct corollary of this result is that, while the
-evidence estimates from MCMC \textit{are} consistent, 
-the rate of convergence to the underlying value 
-will proceed exponentially more slowly
-as $d$ increases.}
+где $k$ - константа, зависящая от требований к точности. Это ставит аппроксимацию полного апостериорного значения в режим "проклятия размерности" (см. \S\ref{subsec:curse}).\footnote{Прямое следствие этого результата состоит в том, что, хотя оценки доказательств, полученные с помощью MCMC, \textit{are} согласованы, скорость сходимости к базовому значению будет происходить экспоненциально медленнее по мере увеличения $d$.}
 
-While many practitioners talk about MCMC being 
-an efficient method to ``approximate the posterior'', in practice it is rarely
-used to approximate $\posterior(\params)$ directly.
-As discussed in \S\ref{sec:what} and shown in
-{\color{red} \autoref{fig:corner}}, almost all quantities 
-that are reported in the literature \textit{do not} rely on approximations to
-the full $d$-dimensional posterior, but rather approximations to marginalized
-distributions that are almost always restricted to no more 
-than $k\lesssim3$ parameters at a time.
-The act of marginalizing over the remaining $d-k$ parameters
-helps to counteract the curse of dimensionality illustrated here.
-While it is technically fair to say that MCMC can ``explore'' 
-the marginalized $k$-D posteriors for certain limited sets of parameters, 
-this type of language can often lead to more misconceptions than insights.
+Хотя многие практики говорят о том, что MCMC является эффективным методом для ``приближения апостериорного значения'', на практике он редко используется для непосредственного приближения $\posterior(\params)$. Как обсуждается в \S\ref{sec:what} и показано на {\color{red} \autoref{fig:corner}}, почти все величины, о которых сообщается в литературе \textit{do}, опираются не на приближения к полному $d$-мерному апостериору, а на приближения к маргинальным распределениям, которые почти всегда ограничены не более чем $k\lesssim3$ параметрами за один раз. Акт по оставшимся $d-k$ параметрам помогает противостоять проклятию размерности, проиллюстрированному здесь. Хотя технически справедливо сказать, что MCMC может "исследовать" маргинальные $k$-D-апостериоры для определенных ограниченных наборов параметров, такой язык часто может привести к большим заблуждениям, чем к пониманию.
 
-\subsection{Posterior Volume} \label{subsec:volume}
+\subsection{Апостериорный объем} \label{subsec:volume}
 
-The basic consequences outlined in \S\ref{subsec:post_approx} 
-are more general than the specific case where we imagine dividing
-up the posterior into orthants or other regions.
-Fundamentally, computing any expectation
-over the posterior $\meanwrt{f(\params)}{\posterior}$ requires
-integrating over the \textit{entire domain} of our parameters 
-$\params$. We therefore want to understand how the \textbf{volume}
-of this domain behaves (i.e. how many parameter combinations there are).
-Once we have a grasp on how this behaves, we can then starting trying
-to quantify how this will impact our estimates.
-%  for the posterior
+Основные следствия, изложенные в \S\ref{subsec:post_approx}, являются более общими, чем в конкретном случае, когда мы представляем себе разбиение апостериорной части на ортанты или другие области. По сути, вычисление любого ожидания по апостериору $\meanwrt{f(\params)}{\posterior}$ требует интегрирования по \textit{entire domain} наших параметров $\params$. Поэтому мы хотим понять, как ведет себя \textbf{объем} этой области (т.е. сколько существует комбинаций параметров). Как только мы поймем, как он ведет себя, мы можем начать пытаться количественно оценить, как это повлияет на наши оценки. 
+% for the posterior
 % $\posterior(\params)$ versus expectation values over the posterior
 % $\meanwrt{f(\params)}{\posterior}$
 
-To start, let's consider the
-$d$-dimensional hyper-cube (the $d$-cube)
-with side length $\ell$ in all $d$ dimensions. Its volume scales as
+Для начала рассмотрим $d$-мерный гиперкуб ($d$-куб) с длиной стороны $\ell$ во всех $d$ измерениях. Его объем масштабируется как
 \begin{equation}
     V(\ell) = \prod_{i=1}^{d} \ell = \ell^d
 \end{equation}
-The differential volume element between $\ell$ and
+Дифференциальный элемент объема между $\ell$ и
 $\ell + \deriv \ell$ is
 \begin{equation}
     \deriv V(\ell) = (d \times \ell^{d-1}) \times (\deriv\ell) \propto \ell^{d-1}
 \end{equation}
 
-This exponential scaling with dimensionality means that volume becomes
-increasingly concentrated in thin shells located in regions located
-progressively further away from the center of the $d$-cube. 
-As an example, consider the length-scale
+Это экспоненциальное масштабирование с размерностью означает, что объем становится все более сконцентрированным в тонких оболочках, расположенных в областях, все более удаленных от центра $d$-куба. 
+В качестве примера рассмотрим масштаб длины
 \begin{equation}
     \ell_{50} = 2^{-1/d} \ell
 \end{equation}
-that divides the $d$-cube into two equal-sized regions
-with 50\% of the volume contained interior to $\ell_{50}$ and
-50\% of the volume exterior to $\ell_{50}$. 
-In 1-D, this gives $\ell_{50}/\ell = 0.5$ as we'd
-expect. In 2-D, this gives $\ell_{50}/\ell \approx 0.7$. In 3-D,
-$\ell_{50}/\ell \approx 0.8$. In 7-D, $\ell_{50}/\ell \approx 0.9$.
-By the time we get to 15-D, we have $\ell_{50} /\ell\approx 0.95$,
-which means that 50\% of the volume is located in the last 5\% of the 
-length-scale near the boundary of the $d$-cube.
-While the constants may change when considering other shapes (e.g., spheres),
-in general this exponential scaling as a function of $d$ is a generic feature
-of higher-dimensional volumes. In other words, increasing the number
-of parameters leads to an exponential increase in the number of
-available parameter combinations that we have to explore.
+который делит $d$-куб на две равные по размеру области с 50\% объема, содержащегося внутри $\ell_{50}$ и 50\% объема, содержащегося снаружи $\ell_{50}$. В одномерном случае это дает $\ell_{50}/\ell = 0,5$, как мы и ожидали. В двумерном случае это дает $\ell_{50}/\ell \approx 0.7$. В 3-D $\ell_{50}/\ell \approx 0.8$. В 7-D - $\ell_{50}/\ell \approx 0.9$. К моменту перехода к 15-D мы имеем $\ell_{50} /\ell\approx 0.95$, что означает, что 50\% объема находится в последних 5\% шкалы длин вблизи границы $d$-куба. Хотя константы могут меняться при рассмотрении других форм (например, сферы), в целом это экспоненциальное масштабирование в зависимости от $d$ является общим свойством высокоразмерных объемов. Другими словами, увеличение числа параметров приводит к экспоненциальному росту числа доступных комбинаций параметров, которые нам предстоит исследовать.
 
 \begin{figure}
 \begin{center}
 \includegraphics[width=\textwidth]{figures/fig11.png}
 \end{center}
-\caption{A schematic illustration of how the curse of dimensionality
-affects MCMC acceptance fractions via posterior volume.
-At a given position position $\params$, 
-the volume increases $\propto r^d$ as a function 
-of distance $r$ away from that position (left). 
-As the dimensionality increases, this implies volume
-becomes concentrated progressively further out, leading to 
-larger distances between proposed positions $\params'$ and the current
-position $\params$. Most of these positions have significantly lower
-posterior probabilities $\posterior(\params')$ compared to the 
-current value $\posterior(\params)$, leading to an
-exponential decline in the typical acceptance fraction
-(and a corresponding increase in the auto-correlation time)
-as the dimensionality increases (right). Adjusting the size
-and/or shape of the proposal $\proposal(\params'|\params)$
-can help to counteract this behavior.
-See \S\ref{subsec:volume} for additional details.
-}\label{fig:vol}
+\caption{Схематическая иллюстрация того, как проклятие размерности влияет на фракции принятия MCMC через объем апостериорных данных. При заданной позиции $\params$ объем увеличивается $\propto r^d$ как функция расстояния $r$ от этой позиции (слева). По мере увеличения размерности этот объем становится все более концентрированным, что приводит к увеличению расстояния между предлагаемыми позициями $\params'$ и текущей позицией $\params$. Большинство этих позиций имеют значительно меньшие апостериорные вероятности $\posterior(\params')$ по сравнению с текущим значением $\posterior(\params)$, что приводит к экспоненциальному снижению типичной доли принятия (и соответствующему увеличению времени автокорреляции) по мере увеличения размерности (справа). Регулировка размера и/или формы предложения $\proposal(\params'|\params)$ может помочь противостоять такому поведению. Дополнительные подробности см. в разделе \S\ref{subsec:volume}. }\label{fig:vol}
 \end{figure}
 
-In addition to affecting the long-term behavior of MCMC, 
-this exponential increase in volume also directly
-impacts how MCMC methods operate. To see why this is the case, we
-need look no further than the transition probability used in the
-MH algorithm discussed in \S\ref{subsec:mh}:
+Помимо того, что этот экспоненциальный рост объема влияет на долгосрочное поведение MCMC, он также непосредственно влияет на то, как работают методы MCMC. Чтобы понять, почему это так, достаточно взглянуть на вероятности перехода, используемые в алгоритме MH, рассмотренном в \S\ref{subsec:mh}:
 \begin{equation*}
     T(\params_{i+1}|\params_i)
     \equiv \min\left[1, \frac{\posterior(\params_{i+1})}{\posterior(\params_i)}
     \frac{\proposal(\params_i|\params_{i+1})}{\proposal(\params_{i+1}|\params_i)}
     \right]
 \end{equation*}
-The non-trivial portion of this expression cleanly splits into two terms.
-The first is dependent on the \textit{volume} and is related to
-how we proposed our next position from $\proposal(\params'|\params)$.
-The second is dependent on the \textit{density} and is related to
-how the posterior density changes between the two positions.
+Нетривиальная часть этого выражения четко распадается на два члена. Первый зависит от \textit{volume} и связан с тем, как мы предложили нашу следующую позицию из $\proposal(\params'|\params)$. Вторая зависит от \textit{density} и связана с тем, как меняется апостериорная плотность между двумя позициями.
 
-In practice, our transition probability can be interpreted as
-a basic corrective approach: after proposing
-a new position from some nearby volume, we then try to ``correct''
-for differences between our proposal and the underlying posterior
-by only accepting these moves sometimes based on changes in the underlying density.
-In high dimensions, this basic ``tug of war'' between the volume (proposal) and
-the density (posterior) can break down as the vast majority of an object's 
-volume becomes concentrated near the outer edges.\footnote{Alternative
-methods such as Hamiltonian Monte Carlo \citep{neal12} can get around
-this problem by smoothly incorporating changes in the density and volume.}
-For instance, in the case where our
-proposal $\proposal(\params'|\params)$ is a cube with side-length $\ell$
-centered on $\params$, this leads to a median length-scale of
-$\ell_{50} = 2^{-1/d} \ell$, which increases rapidly from $0.5 \ell$
-to $\approx \ell$ as the dimensionality increases. The same logic
-also applies to other proposal distributions (see \S\ref{sec:example}).
-This focus on positions either far away or with very similar separation
-length-scales as $\ell_{50} \rightarrow \ell$ 
-means that many choices of $\proposal(\params'|\params)$
-have a tendency to ``overshoot'', proposing new positions with much
-smaller posterior densities compared to the current position. These
-new positions are then almost always rejected, leading to extremely
-low acceptance fractions and correspondingly
-long auto-correlation times. An example of this effect is
-illustrated in {\color{red} \autoref{fig:vol}.}
+На практике нашу вероятность перехода можно интерпретировать как базовый корректирующий подход: предложив новую позицию из некоторого близлежащего объема, мы затем пытаемся ``скорректировать'' различия между нашим предложением и базовым апостериором, принимая эти перемещения только иногда на основе изменений базовой плотности. В высоких измерениях это базовое ``перетягивание каната'' между объемом (предложение) и плотностью (апостериор) может разрушиться, поскольку большая часть объема объекта концентрируется у внешних краев.\footnote{Альтернативные методы, такие как гамильтоновский Монте-Карло,\citep{neal12} могут обойти эту проблему, плавно включая изменения в плотности и объеме.} Например, в случае, когда наше предложение $\proposal(\params'|\params)$ представляет собой куб с длиной стороны $\ell$, сосредоточенной на $\params$, это приводит к медианному масштабу длины $\ell_{50} = 2^{-1/d} \ell$, которая быстро увеличивается с $0.5 \ell$ до $\approx \ell$ по мере увеличения размерности. Та же логика применима и к другим распределениям предложений (см. \S\ref{sec:example}). Этот фокус на позициях, расположенных либо далеко, либо с очень похожими шкалами длины разделения, как $\ell_{50} \rightarrow \ell$ означает, что многие варианты $\proposal(\params'|\params)$ имеют тенденцию к ``проскакиванию'', предлагая новые позиции с гораздо меньшими плотностями апостериорного распределения по сравнению с текущей позицией. Эти новые позиции затем почти всегда отвергаются, что приводит к крайне низким долям принятия и соответственно большим временам автокорреляции. Пример этого эффекта показан на {\color{red} \autoref{fig:vol}}.
 
-One of the main ways to counteract this behavior is to
-adjust the size/shape of the proposal $\proposal(\params'|\params)$
-so that the fraction of proposed positions that are accepted remains
-sufficiently high. This helps to ensure the posterior density 
-$\posterior(\params)$ does not change too drastically when proposing 
-positions new positions, leading to lower overall auto-correlation times.
-Details of how to implement these schemes in practice are beyond 
-the scope of this article; please see
-\textbf{citation} for additional details.
+Одним из основных способов борьбы с таким поведением является регулировка размера/формы предложения $\proposal(\params'|\params)$ таким образом, чтобы доля принятых предложений оставалась достаточно высокой. Это помогает гарантировать, что плотность постера $\posterior(\params)$ не изменяется слишком сильно при предложении новых позиций, что приводит к снижению общего времени автокорреляции. Подробное описание того, как реализовать эти схемы на практике, выходит за рамки данной статьи; за дополнительными подробностями обращайтесь к \textbf{citation}.
 
-\subsection{Posterior Mass and Typical Sets} \label{subsec:mass}
+\subsection{Апостериорная масса и типичные сеты} \label{subsec:mass}
 
-Above, I described how the behavior of volume in high dimensions
-can impact the performance of our MCMC MH sampling algorithm,
-possibly leading to inefficient proposals and 
-low acceptance fractions. Let's assume that we have resolved this
-problem and have an efficient way of generating our chain
-of samples. We now have a secondary question: \textit{where are these
-samples located?}
+Выше я описал, как поведение объема в высоких измерениях может повлиять на производительность нашего алгоритма выборки MCMC MH, возможно, приводя к неэффективным предложениям и низким долям принятия. Предположим, что мы решили эту проблему и имеем эффективный способ генерации нашей цепочки выборок. Теперь у нас есть вторичный вопрос: \textit{где находятся эти образцы?}
 
-From our discussion in \S\ref{subsec:post_approx}, we know that
-the highest \textit{density} of samples $\rho(\params)$
-will be located where the posterior density $\posterior(\params)$
-is also correspondingly high. However, this region $\delta_{\params}$
-might only correspond to a small portion of the posterior. 
-Indeed, given there is exponentially more volume as the dimensionality
-increases, it is almost guaranteed that models with many parameters
-$\params$ will have the vast majority of the posterior located
-outside the region of highest density. 
+Из нашего обсуждения в \S\ref{subsec:post_approx} мы знаем, что наибольшая \textit{плотность} образцов $\rho(\params)$ будет находиться там, где соответственно высока и апостериорная плотность $\posterior(\params)$. Однако эта область $\delta_{\params}$ может соответствовать лишь небольшой части апостериорной плотности. Действительно, учитывая, что с ростом размерности объем экспоненциально увеличивается, почти гарантировано, что в моделях с большим количеством параметров $\params$ подавляющая часть апостериорных данных будет находиться за пределами области наибольшей плотности. 
 
-A consequence of this is that
-the majority of samples in our chain will be located
-away from the peak density. As a result, \textit{our chain
-spends the majority of its time
-generating samples in these regions}.
-This has a huge impact in the way our chain is expected to behave:
-while the highest \textit{concentration}
-of samples will be located in the regions of highest
-posterior density, the largest \textit{amount} of samples
-will actually be located in the regions of highest \textbf{posterior
-mass} (i.e. density times volume). 
-Since this implies that a ``typical'' sample 
-(picked at random) will most likely be located in this
-region of high posterior mass,
-this region is also commonly referred to
-as the \textbf{typical set}.
+Следствием этого является то, что большинство образцов в нашей цепочке будут расположены вдали от пика плотности. В результате \textit{наша цепочка тратит большую часть своего времени на генерацию образцов в этих областях}. Это оказывает огромное влияние на поведение нашей цепочки: в то время как наибольшая \textit{концентрация} образцов будет располагаться в областях с наибольшей плотностью заднего плана, наибольшее \textit{количество} образцов будет располагаться в областях с наибольшей \textbf{массой заднего плана} (т.е. плотность умножить на объем). Поскольку это подразумевает, что "типичный" образец (выбранный случайным образом), скорее всего, будет расположен в этой области с высокой задней массой, эту область также принято называть \textbf{типичным множеством}.
 
-To make this argument a little easier to conceptualize,
-let's imagine that we have a 3-parameter model $\params = (x, y, z)$ 
-and $\posterior(x,y,z)$ is spherically symmetric.
-While we could imagine trying to
-integrate over $\posterior(x,y,z)$ directly in terms of
-$\deriv x \deriv y \deriv z$, it is almost always
-easier to instead integrate over such a distribution
-in ``shells'' with differential volume
-$\deriv V(r) = 4 \pi r^2 \deriv r$
-as a function of radius
-$r = \sqrt{x^2 + y^2 + z^2}$. This allows us
-to rewrite the 3-D integral over $(x,y,z)$ as a 1-D integral over $r$:
+Чтобы немного упростить концепцию этого аргумента, представим, что у нас есть 3-параметрическая модель $\params = (x, y, z)$ и $\posterior(x,y,z)$ сферически симметрична. Хотя мы можем представить себе попытку интегрировать по $\posterior(x,y,z)$ непосредственно в терминах $\deriv x \deriv y \deriv z$, почти всегда проще интегрировать по такому распределению в ``оболочках'' с дифференциальным объемом $\deriv V(r) = 4 \pi r^2 \deriv r$ как функцию радиуса $r = \sqrt{x^2 + y^2 + z^2}$. Это позволяет нам переписать трехмерный интеграл по $(x,y,z)$ как одномерный интеграл по $r$:
 \begin{equation}
     \int \posterior(x,y,z) \deriv x \deriv y \deriv z
     = \int \posterior(r) 4 \pi r^2 \deriv r
     \equiv \int \posterior'(r) \deriv r
 \end{equation}
-where $\posterior'(r) \equiv 4 \pi r^2 \posterior(r)$ is now
-the 1-D density as a function of $r$. This ``boosts'' the contribution
-as a function of $r$ by the differential volume element of the
-shell associated with $\posterior(r)$, and implies that the
-the posterior should have some sort of shell-like structure (i.e.
-$\posterior'(r)$ is maximized for $r > 0$).
+где $\posterior'(r)\equiv 4 \pi r^2 \posterior(r)$ теперь является одномерной плотностью как функцией $r$. Это ``увеличивает'' вклад в функцию $r$ дифференциального элемента объема оболочки, связанного с $\posterior(r)$, и подразумевает, что апостериор должен иметь какую-то оболочкоподобную структуру (т.е. $\posterior'(r)$ максимизируется для $r > 0$).
 
-Although not all posterior densities can be expected to
-be spherically-symmetric in this way, in general we can
-rewrite the $d$-D integral over $\params$ as a 1-D volume integral
-over $V$ defined by some unknown iso-posterior 
-contours\footnote{Indeed, alternative Monte Carlo methods such as 
-Nested Sampling \citep{skilling04,skilling06} or 
-Bridge/Path Sampling \citep{gelmanmeng98} actually are designed to 
-evaluate this type of volume integral explicitly.}
+Хотя не все плотности апостериорных данных могут быть сферически-симметричными таким образом, в общем случае мы можем переписать $d$-D интеграл по $\params$ как одномерный интеграл объема по $V$, определяемый некоторыми неизвестными изо-постериорными контурами\footnote{И действительно, альтернативные методы Монте-Карло, такие как Nested Sampling \citep{skilling04,skilling06} или Bridge/Path Sampling \citep{gelmanmeng98}, фактически предназначены для явной оценки такого типа интеграла объема}.
 \begin{equation}
     \int \posterior(\params) \deriv \params
     = \int \posterior(V) \deriv V
 \end{equation}
-As outlined in \S\ref{subsec:volume}, we generically
-expect the size of each volume element to go as
-$\deriv V \sim r^{d-1} \deriv r$ where $r$ is the
-distance from the peak of posterior. So the basic
-intuition we get from the simple spherically-symmetric case
-still applies and we expect
+Как указано в \S\ref{subsec:volume}, мы в общем случае ожидаем, что размер каждого элемента объема будет равен $\deriv V \sim r^{d-1} \deriv r$, где $r$ - расстояние от пика постера. Таким образом, основная интуиция, которую мы получаем из простого сферически-симметричного случая, по-прежнему применима, и мы ожидаем, что
 \begin{equation}
     \int \posterior(V) \deriv V 
     \sim \int \posterior(r) r^{d-1} \deriv r
     = \int \posterior'(r) \deriv r
 \end{equation}
 
-As before, the differential volume element of the
-shell associated with $\posterior(r)$ ``boosts'' its overall
-contribution as a function of $r$. This boost also becomes
-exponentially stronger as $d$ increase. 
-\textit{For even moderately-sized $d$,
-we therefore expect the posterior mass
-to be mostly contained in a thin shell located at a radius $r'$
-with some width $\Delta r'$}.
-See {\color{red} \autoref{fig:mass}} for an illustration of this effect
-based on the toy problem presented in \S\ref{subsec:analytic}.
+Как и прежде, дифференциальный элемент объема оболочки, связанный с $\posterior(r)$, "увеличивает'' свой общий вклад как функция $r$. Это усиление также становится экспоненциально сильнее с ростом $d$. \textit{Для даже умеренно больших $d$ мы ожидаем, что масса заднего плана будет в основном содержаться в тонкой оболочке, расположенной на радиусе $r'$ с некоторой шириной $\Delta r'$}. См. {\color{red} \autoref{fig:mass}} для иллюстрации этого эффекта на основе игрушечной задачи, представленной в \S\ref{subsec:analytic}.
 
 \begin{figure}
 \begin{center}
 \includegraphics[width=\textwidth]{figures/fig12.png}
 \end{center}
-\caption{A schematic illustration of how the posterior mass
-behaves as a function of dimensionality using a $d$-dimensional
-Gaussian. The top panel shows the posterior density 
-$\posterior(r) \propto e^{-r^2/2}$ (red) plotted 
-as a function of distance $r$ from the maximum posterior density at $r=0$
-as the number of dimensions $d$ increases (left to right). As expected,
-this distribution remains constant. The middle panel shows
-the differential volume element 
-$\deriv V(r) \propto r^{d-1} \deriv r$ (blue) of
-the corresponding shell at radius $r$. This illustrates the
-exponentially increasing volume contributed by shells further
-away from the maximum. The bottom panel shows corresponding
-``posterior mass'' as a function of radius 
-$\posterior'(r) \propto r^{d-1} \posterior(r) \propto r^{d-1} e^{-r^2/2}$ (purple).
-Due to the increasing amount of volume located further away from
-the maximum posterior density, we see that the majority of the
-posterior mass (and therefore of any samples we generate with MCMC)
-are actually located a shell located far away from the $r=0$.
-See \S\ref{subsec:mass} for additional details.
-}\label{fig:mass}
+\caption{Схематическая иллюстрация поведения апостериорной массы в зависимости от размерности с использованием $d$-мерного гаусса. На верхней панели показана апостериорная плотность $\posterior(r) \propto e^{-r^2/2}$ (красный), построенная как функция расстояния $r$ от максимальной апостериорной плотности при $r=0$ по мере увеличения числа измерений $d$ (слева направо). Как и ожидалось, это распределение остается постоянным. На средней панели показан дифференциальный элемент объема $\deriv V(r) \propto r^{d-1} \deriv r$ (синий) соответствующей оболочки радиусом $r$. Это иллюстрирует экспоненциально возрастающий объем, вносимый оболочками, удаленными от максимума. На нижней панели показана соответствующая ``задняя масса'' как функция радиуса $\posterior'(r) \propto r^{d-1} \posterior(r) \propto r^{d-1} e^{-r^2/2}$ (фиолетовый). Из-за увеличения объема, расположенного дальше от максимума апостериорной плотности, мы видим, что большая часть апостериорной массы (и, следовательно, любых выборок, которые мы генерируем с помощью MCMC) на самом деле находится в оболочке, расположенной далеко от $r=0$. Дополнительные подробности см. в \S\ref{subsec:mass}. }\label{fig:mass}
 \end{figure}
 
-This result has two immediate implications. First, \textit{the majority
-of our samples are not located where the posterior
-density is maximized}. This is the result of an exponentially
-increasing number of parameter combinations, which allow a
-small handful of excellent fits to the data to
-be easily overwhelmed by a substantially larger number
-of mediocre fits. MCMC methods are therefore generally
-inefficient at locating and/or characterizing the region of
-peak posterior density.
+ Этот результат имеет два непосредственных следствия. Во-первых, \textit{большинство наших выборок не находится там, где апостериорная плотность максимизируется}. Это результат экспоненциально растущего числа комбинаций параметров, которые позволяют небольшой горстке отличных подгонок к данным легко быть подавленными значительно большим числом посредственных подгонок. Поэтому методы MCMC, как правило, неэффективны для определения местоположения и/или характеристики области пиковой апостериорной плотности.
 
-Second, as $d$ increases we generally would expect the radius of the
-shell containing the bulk of the posterior mass to increase, moving further
-and further away from the peak density due to the exponentially increasing
-available volume. Since the majority of our samples are located in this
-region, \textit{our chain will spend the vast majority 
-of time generating samples from this shell}.
+Во-вторых, при увеличении $d$ мы обычно ожидаем, что радиус оболочки, содержащей основную массу заднего плана, будет увеличиваться, удаляясь все дальше и дальше от пика плотности из-за экспоненциально увеличивающегося доступного объема. Поскольку большинство наших образцов находится в этой области, \textit{наша цепочка будет тратить подавляющее большинство времени на генерацию образцов из этой оболочки}.
 
-This allows us to now outline exactly why it is challenging
-to propose samples efficiently in high dimensions:
-\begin{enumerate}
-    \item To make sure our acceptance fractions remain reasonable, 
-    we need to ensure our proposed positions mostly lie within 
-    this shell of posterior mass.
-    \item However, obtaining an independent sample requires 
-    being able to (in theory) propose any position within this shell.
-    \item This means that our auto-correlation time
-    will principally be set by how long it takes to ``wander around''
-    the shell, which will be a function of its overall size $r'$,
-    its width $\Delta r'$, and the number of dimensions $d$.
-\end{enumerate}
+Это позволяет нам теперь точно описать, почему сложно эффективно предлагать образцы в высоких измерениях: \begin{enumerate} \item Чтобы наши доли принятия оставались разумными, нам нужно убедиться, что наши предложенные позиции в основном лежат внутри этой оболочки задней массы. \item Однако получение независимой выборки требует возможности (теоретически) предложить любую позицию внутри этой оболочки. \item Это означает, что время автокорреляции будет зависеть от того, сколько времени потребуется, чтобы "обойти" оболочку, что будет зависеть от ее общего размера $r'$, ширины $\Delta r'$ и количества измерений $d$. \end{enumerate} 
 
-\section{Application to a Simple Toy Problem} \label{sec:example}
+\section{Применение к простой проблеме} \label{sec:example}
 
-I now consider a concrete, detailed example
-to illustrate how all the concepts discussed in \S\ref{sec:mcmc} and
-\S\ref{sec:sampling} come together in practice. 
-Throughout this section, I will outline a number of analytic
-results and utilize several different MCMC sampling strategies
-to generate chains of samples. I strongly encourage interested readers
-to implement their own versions of the methods outlined here,
-which can be used to reproduce the numerical results from this section
-in their entirety.
+Теперь я рассмотрю конкретный, подробный пример, чтобы проиллюстрировать, как все концепции, обсуждаемые в \S\ref{sec:mcmc} и \S\ref{sec:sampling}, объединяются на практике. На протяжении всего этого раздела я изложу ряд аналитических результатов и использую несколько различных стратегий MCMC-выборки для создания цепочек выборок. Я настоятельно рекомендую заинтересованным читателям реализовать свои собственные версии описанных здесь методов, которые могут быть использованы для полного воспроизведения численных результатов из этого раздела.
 
 \subsection{Toy Problem} \label{subsec:analytic}
 
